@@ -24,6 +24,7 @@ import '@ionic/react/css/display.css';
 
 /* Theme variables */
 import './theme/variables.css';
+import Stockmanagement from './pages/Stockmanagement';
 
 setupIonicReact();
 
@@ -42,6 +43,9 @@ const App: React.FC = () => {
             </Route>
             <Route path="/page/Order" exact={true}>
               <Order />
+            </Route>
+            <Route path="/page/Stock" exact={true}>
+              <Stockmanagement />
             </Route>
           </IonRouterOutlet>
         </IonSplitPane>

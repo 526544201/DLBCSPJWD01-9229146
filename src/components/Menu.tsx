@@ -31,7 +31,7 @@ const appPages: AppPage[] = [
   },
   {
     title: 'Stockmanagement',
-    url: '/page/Outbox',
+    url: '/page/Stock',
     iosIcon: paperPlaneOutline,
     mdIcon: paperPlaneSharp
   },
