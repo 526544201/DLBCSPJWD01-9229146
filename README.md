@@ -56,6 +56,10 @@ Every request from the app will be checked first for the JWT. This token will be
 Every request needs to be sanitized and prepared before a query can happen to prevent SQL injections and other security vulnerabilities.  
 INSERT and UPDATE requests will be hashed and this hash will be saved in a field in the appropiate database table to provide idempotency.
 
+## ER Diagram
+
+![alt text](https://github.com/526544201/DLBCSPJWD01-9229146/blob/master/Documentation/ER_Diagram_DB.png?raw=true)
+
 ## Run Locally
 
 Clone the project
