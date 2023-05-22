@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { IonButtons, IonContent, IonHeader, IonLabel, IonMenuButton, IonPage, IonSegment, IonSegmentButton, IonTitle, IonToolbar } from '@ionic/react';
 import OrderOverview from '../components/OrderOverview';
+import OtherOrders from '../components/OtherOrders';
 
 const Order: React.FC = () => {
 
@@ -20,7 +21,7 @@ const Order: React.FC = () => {
             componentToRender = <OrderOverview key="star" vendorId="2" />; 
             break;
         case "other":
-            componentToRender = <OrderOverview key="other" vendorId="3" />; {/* TODO: Seperate component */}
+            componentToRender = <OtherOrders key="other" />; {/* TODO: Seperate component */}
             break;
         default:
             componentToRender = <OrderOverview key="default" vendorId="1" />; 
