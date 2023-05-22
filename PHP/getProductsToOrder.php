@@ -18,27 +18,49 @@
 
     // TODO: Validate payload
 
-    // TODO: Check for parameters
+    // Check for parameters
+    if(!isset($_GET['vendor'])) {
+        // Send status code 400 and error message
+        http_response_code(400);
+        echo json_encode(array(
+            "error" => "Missing vendor parameter"
+        ));
+        die();
+    }
+    // Set the vendor
+    $vendorId = $_GET['vendor'];
+
+    // Sanitize the request
+    $vendorId = filter_var($vendorId, FILTER_SANITIZE_NUMBER_INT);
 
     // Database Connection
     require("util/connection.php");
 
-    // Query the database
-    $query = "SELECT * FROM products WHERE stock < minAmount";
-    $result = mysqli_query($conn, $query);
+    // Prepare the statement
+    $stmt = mysqli_prepare($conn, "SELECT * FROM products WHERE vendor_id = ? AND stock < minAmount");
+
+    // Bind parameters
+    mysqli_stmt_bind_param($stmt, "i", $vendorId);
+
+    // Execute the statement
+    mysqli_stmt_execute($stmt);
+
+    // Get the result
+    $result = mysqli_stmt_get_result($stmt);
 
     // Check for errors
     if (!$result) {
         die("Query failed: " . mysqli_error($conn));
     }
 
-    // TODO: Formulate the response
+    // Formulate the response
     $products = array();
     while ($row = mysqli_fetch_assoc($result)) {
         $products[] = $row;
     }
 
-    // Close the database connection
+    // Close the database connection and statement
+    mysqli_stmt_close($stmt);
     mysqli_close($conn);
 
     // TODO: Send the response

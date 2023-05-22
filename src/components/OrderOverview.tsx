@@ -1,14 +1,25 @@
 import React, { Component } from 'react';
+import PropTypes from 'prop-types';
 import axios from 'axios';
 import environment from '../environment';
 
-class OrderOverview extends Component {
+interface OrderOverviewProps { // Create an interface for the props that are passed to this component - Otherwise TypeScript will complain
+    vendorId: string 
+}
+
+class OrderOverview extends Component<OrderOverviewProps> {
+
     state = { // Holds data in the component
         products: []
     }
 
     componentDidMount() { // Lifecycle method - When the component is mounted (on the screen)
-        axios.get(environment.apiUrl + '/getProductsToOrder.php') // Get the products from the API via http request
+        const vendorId = this.props.vendorId; 
+        axios.get(environment.apiUrl + '/getProductsToOrder.php', {
+            params: { // Set the parameters for the request
+                vendor: vendorId
+            }
+        }) // Get the products from the API via http request
             .then(response => {
                 console.log(response); // DEBUG: Log the response to the console 
                 this.setState({ products: response.data }); // Set the state of the products array to the response data
