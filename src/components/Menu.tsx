@@ -40,6 +40,12 @@ const appPages: AppPage[] = [
     url: '/page/Order',
     iosIcon: heartOutline,
     mdIcon: heartSharp
+  },
+  {
+    title: 'Login',
+    url: '/page/Login',
+    iosIcon: heartOutline,
+    mdIcon: heartSharp
   }
 ];
 
