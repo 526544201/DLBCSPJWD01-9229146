@@ -2,13 +2,13 @@ import React, { Component } from 'react';
 import axios from 'axios';
 import environment from '../environment';
 
-class ProductsTable extends Component {
+class OrderOverview extends Component {
     state = { // Holds data in the component
-        products: [] ,
+        products: []
     }
 
     componentDidMount() { // Lifecycle method - When the component is mounted (on the screen)
-        axios.get(environment.apiUrl + '/getProducts.php') // Get the products from the API via http request
+        axios.get(environment.apiUrl + '/getProductsToOrder.php') // Get the products from the API via http request
             .then(response => {
                 console.log(response); // DEBUG: Log the response to the console 
                 this.setState({ products: response.data }); // Set the state of the products array to the response data
@@ -25,9 +25,9 @@ class ProductsTable extends Component {
                     <thead>
                         <tr>
                             <th>Name</th>
-                            <th>Vendor</th>
                             <th>Stock</th>
                             <th>Minimum</th>
+                            <th>To Order</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -35,9 +35,12 @@ class ProductsTable extends Component {
                         {this.state.products.map((product: any) => (
                             <tr key={product.id}> 
                                 <td>{product.name}</td>
-                                <td>{product.vendor_id}</td>
                                 <td>{product.stock}</td>
                                 <td>{product.minAmount}</td>
+                                <td>
+                                    {Math.ceil((product.minAmount - product.stock) / product.size)} {/* Calculate the amount of boxes to order. Round up to the nearest full box */}
+                                    {product.size > 1 ? " Boxes" : ""} {/* If the product is sold in boxes, add "Boxes". Otherwise, leave the number alone */}
+                                </td>
                             </tr>
                         ))}
                     </tbody>
@@ -47,4 +50,4 @@ class ProductsTable extends Component {
     }
 }
 
-export default ProductsTable;
+export default OrderOverview;

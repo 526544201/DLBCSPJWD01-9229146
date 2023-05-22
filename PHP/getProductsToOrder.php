@@ -23,7 +23,9 @@
     // Database Connection
     require("util/connection.php");
 
-    // TODO: Query the database
+    // Query the database
+    $query = "SELECT * FROM products WHERE stock < minAmount";
+    $result = mysqli_query($conn, $query);
 
     // Check for errors
     if (!$result) {
@@ -31,10 +33,16 @@
     }
 
     // TODO: Formulate the response
+    $products = array();
+    while ($row = mysqli_fetch_assoc($result)) {
+        $products[] = $row;
+    }
 
     // Close the database connection
     mysqli_close($conn);
 
     // TODO: Send the response
+    http_response_code(200);
+    echo json_encode($products);
 
 ?>
