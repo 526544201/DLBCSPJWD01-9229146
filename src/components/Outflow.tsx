@@ -43,9 +43,9 @@ class Outflow extends Component {
 
     groupByCategory(products: any) {
         const groupedProducts = products.reduce((grouped: any, product: any) => { // Iterate through the products array, accumulating the products into groups based on the callback function
-            const category = product.category_id; // Get the category id of the current product
-            if (!grouped[category]) { // If the category id doesn't exist in the groups object
-                grouped[category] = []; // Create a new array for the category id
+            const category = product.category_name; // Get the category name of the current product
+            if (!grouped[category]) { // If the category name doesn't exist in the groups object
+                grouped[category] = []; // Create a new array for the category name
             }
             grouped[category].push(product); // Push the product to the array
             return grouped;
@@ -94,11 +94,11 @@ class Outflow extends Component {
         
             <div>  { /* Only one element can be returned, so we wrap everything in a div. This div holds the table */ }
                 <form onSubmit={this.handleSubmit}>
-                {Object.entries(groupedProducts).map(([categoryId, products]) => ( // Object.entries returns an array of key-value pairs. 
+                {Object.entries(groupedProducts).map(([categoryName, products]) => ( // Object.entries returns an array of key-value pairs. 
                     // The key is the category id, and the value is the array of products. For each key-value pair, create an Table with the corresponding products
-                    <div key={categoryId}>
+                    <div key={categoryName}>
                         <div className="ion-padding" slot="content">
-                            <h2>{categoryId}</h2>
+                            <h2>{categoryName}</h2>
                             <table>
                                 <thead>
                                     <tr>

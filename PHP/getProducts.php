@@ -24,7 +24,11 @@
     require("util/connection.php");
 
     // Query the database
-    $query = "SELECT * FROM products";
+    $query =   "SELECT products.*, vendors.name as vendor_name, categories.name as category_name, shelves.name as shelf_name
+                FROM products
+                INNER JOIN vendors ON products.vendor_id = vendors.id
+                INNER JOIN categories ON products.category_id = categories.id
+                INNER JOIN shelves ON products.shelf_id = shelves.id";
     $result = mysqli_query($conn, $query);
 
     // Check for errors

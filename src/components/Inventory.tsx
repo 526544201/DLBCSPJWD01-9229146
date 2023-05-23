@@ -21,9 +21,9 @@ class Inventory extends Component {
 
     groupByShelf(products: any) {
         const groupedProducts = products.reduce((grouped: any, product: any) => { // Iterate through the products array, accumulating the products into groups based on the callback function
-            const shelf = product.shelf_id; // Get the shelf id of the current product
-            if (!grouped[shelf]) { // If the shelf id doesn't exist in the groups object
-                grouped[shelf] = []; // Create a new array for the shelf id
+            const shelf = product.shelf_name; // Get the shelf name of the current product
+            if (!grouped[shelf]) { // If the shelf name doesn't exist in the groups object
+                grouped[shelf] = []; // Create a new array for the shelf name
             }
             grouped[shelf].push(product); // Push the product to the array
             return grouped;
@@ -47,11 +47,11 @@ class Inventory extends Component {
         
             <div>  { /* Only one element can be returned, so we wrap everything in a div. This div holds the table */ }
                 <form onSubmit={this.handleSubmit}>
-                {Object.entries(groupedProducts).map(([shelfId, products]) => ( // Object.entries returns an array of key-value pairs. 
+                {Object.entries(groupedProducts).map(([shelfName, products]) => ( // Object.entries returns an array of key-value pairs. 
                     // The key is the category id, and the value is the array of products. For each key-value pair, create an Table with the corresponding products
-                    <div key={shelfId}>
+                    <div key={shelfName}>
                         <div className="ion-padding" slot="content">
-                            <h2>{shelfId}</h2>
+                            <h2>{shelfName}</h2>
                             <table>
                                 <thead>
                                     <tr>

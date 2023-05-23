@@ -42,9 +42,9 @@ class Inflow extends Component {
 
     groupByVendor(products: any) {
         const groupedProducts = products.reduce((grouped: any, product: any) => { // Iterate through the products array, accumulating the products into groups based on the callback function
-            const vendor = product.vendor_id; // Get the vendor id of the current product
-            if (!grouped[vendor]) { // If the vendor id doesn't exist in the groups object
-                grouped[vendor] = []; // Create a new array for the vendor id
+            const vendor = product.vendor_name; // Get the vendor of the current product
+            if (!grouped[vendor]) { // If the vendor doesn't exist in the groups object
+                grouped[vendor] = []; // Create a new array for the vendor
             }
             grouped[vendor].push(product); // Push the product to the array
             return grouped;
@@ -93,11 +93,11 @@ class Inflow extends Component {
         
             <div>  { /* Only one element can be returned, so we wrap everything in a div. This div holds the table */ }
                 <form onSubmit={this.handleSubmit}>
-                {Object.entries(groupedProducts).map(([vendorId, products]) => ( // Object.entries returns an array of key-value pairs. 
+                {Object.entries(groupedProducts).map(([vendorName, products]) => ( // Object.entries returns an array of key-value pairs. 
                     // The key is the category id, and the value is the array of products. For each key-value pair, create an Table with the corresponding products
-                    <div key={vendorId}>
+                    <div key={vendorName}>
                         <div className="ion-padding" slot="content">
-                            <h2>{vendorId}</h2>
+                            <h2>{vendorName}</h2>
                             <table>
                                 <thead>
                                     <tr>
