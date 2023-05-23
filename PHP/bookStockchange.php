@@ -32,7 +32,7 @@
 
     // Check if requestId already exists
     // Prepare the statement
-    $stmt = mysqli_prepare($conn, "SELECT * FROM inflow WHERE requestId = ?");
+    $stmt = mysqli_prepare($conn, "SELECT * FROM stockchanges WHERE request_id = ?");
 
     // Bind the parameter
     mysqli_stmt_bind_param($stmt, "s", $requestId);
@@ -95,7 +95,7 @@
         // Prepare the statements
         switch($type) {
             case "Inflow":
-                $stmt = mysqli_prepare($conn, "INSERT INTO inflow (change_id, product_id, quantity, oldStock, newStock) VALUES (?, ?, ?, ?, ?)");
+                $stmt = mysqli_prepare($conn, "INSERT INTO inflow (change_id, product_id, quantity, old_Stock, new_Stock) VALUES (?, ?, ?, ?, ?)");
                 $stmt2 = mysqli_prepare($conn, "UPDATE products SET stock = ? WHERE id = ?");
                 break;
             case "Outflow":
@@ -103,7 +103,6 @@
                 $stmt2 = mysqli_prepare($conn, "UPDATE products SET stock = ? WHERE id = ?");
                 break;
         }
-
         // Bind parameters
         mysqli_stmt_bind_param($stmt, "siiii", $stockChangeId, $product["productId"], $product["quantity"], $oldStock, $newStock);
         mysqli_stmt_bind_param($stmt2, "ii", $newStock, $product["productId"]);
@@ -115,11 +114,6 @@
         // Get the results
         $result = mysqli_stmt_get_result($stmt);
         $result2 = mysqli_stmt_get_result($stmt2);
-
-        // Check for errors
-        if (!$result || !$result2) {
-            die("Query failed: " . mysqli_error($conn));
-        }
     }
 
     // Close the database connection
