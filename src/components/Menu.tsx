@@ -1,5 +1,6 @@
 import React from 'react';
 import {
+  IonButton,
   IonContent,
   IonIcon,
   IonItem,
@@ -42,7 +43,7 @@ const appPages: AppPage[] = [
     mdIcon: heartSharp
   },
   {
-    title: 'Login',
+    title: 'Login', // TODO: Delete this
     url: '/page/Login',
     iosIcon: heartOutline,
     mdIcon: heartSharp
@@ -88,6 +89,15 @@ const Menu: React.FC = () => {
             );
           })}
         </IonList>
+        <IonItem>
+          <IonButton fill="clear" onClick={ () => {
+            localStorage.removeItem('token');
+            localStorage.removeItem('tokenExpires');
+            localStorage.removeItem('username');
+            localStorage.removeItem('userId');
+            window.location.href = '/page/Login';
+          }} >Log Out</IonButton>
+        </IonItem>
       </IonContent>
     </IonMenu>
   );
