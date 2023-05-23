@@ -53,6 +53,24 @@ const appPages: AppPage[] = [
 const Menu: React.FC = () => {
   const location = useLocation();
 
+  if(localStorage.getItem('token') === null) {
+    return (
+      <IonMenu contentId="main" type="overlay">
+        <IonContent>
+          <IonList id="inbox-list">
+            <IonListHeader>Java and Webdevelopment</IonListHeader>
+            <IonNote>Please Login</IonNote>
+            <IonMenuToggle autoHide={false}>
+              <IonItem className={location.pathname === '/page/Login' ? 'selected' : ''} routerLink="/page/Login" routerDirection="none" lines="none" detail={false}>
+                <IonIcon aria-hidden="true" slot="start" ios={mailOutline} md={mailSharp} />
+                <IonLabel>Login</IonLabel>
+              </IonItem>
+            </IonMenuToggle>
+          </IonList>
+        </IonContent>
+      </IonMenu>
+    )
+  } else {
   return (
     <IonMenu contentId="main" type="overlay">
       <IonContent>
@@ -73,6 +91,7 @@ const Menu: React.FC = () => {
       </IonContent>
     </IonMenu>
   );
-};
+}
+}
 
 export default Menu;
