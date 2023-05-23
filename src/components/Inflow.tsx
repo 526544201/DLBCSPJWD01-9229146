@@ -3,6 +3,7 @@ import axios from 'axios';
 import environment from '../environment';
 import { IonButton, IonInput } from '@ionic/react';
 
+// TODO: MAYBE: Inflow and Outflow could be combined into one component, with a prop to determine which one it is
 
 class Inflow extends Component {
     state = { // Holds data in the component

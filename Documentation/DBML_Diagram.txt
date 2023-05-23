@@ -1,0 +1,91 @@
+// Use DBML to define your database structure
+// Docs: https://dbml.dbdiagram.io/docs
+
+Table users {
+  id INTEGER [primary key]
+  username VARCHAR
+  password VARCHAR
+  role VARCHAR
+  created_at TIMESTAMP
+  active TINYINT
+}
+
+Table categories {
+  id INTEGER [primary key]
+  name VARCHAR
+  order INTEGER
+}
+
+Table products {
+  id INTEGER [primary key]
+  name VARCHAR
+  category_id INTEGER
+  size INTEGER
+  stock INTEGER
+  minAmount INTEGER
+  vendor_id INTEGER
+  item_no_byvendor INTEGER
+  shelf_id INTEGER
+  shelf_order INTEGER
+  active TINYINT
+}
+
+Ref: products.category_id > categories.id
+Ref: products.vendor_id > vendors.id
+Ref: products.shelf_id > shelves.id
+
+Table shelves {
+  id INTEGER [primary key]
+  name VARCHAR
+  order INTEGER
+}
+
+Table stockchanges {
+  id INTEGER [primary key]
+  date DATE
+  type VARCHAR
+  hash VARCHAR
+}
+
+Ref: stockchanges.id < inflow.change_id
+Ref: stockchanges.id < outflow.change_id
+Ref: stockchanges.id < inventory.change_id
+
+Table vendors {
+  id INTEGER [primary key]
+  name VARCHAR
+  email VARCHAR
+  phone VARCHAR
+  address VARCHAR
+}
+
+Table inflow {
+  id INTEGER [primary key]
+  change_id INTEGER
+  product_id INTEGER
+  quantity INTEGER
+  old_Stock INTEGER
+  new_Stock INTEGER
+}
+
+Table inventory {
+  id INTEGER [primary key]
+  change_id INTEGER
+  product_id INTEGER
+  old_Stock INTEGER
+  new_Stock INTEGER
+  quantity INTEGER
+}
+
+Table outflow {
+  id INTEGER [primary key]
+  change_id INTEGER
+  product_id INTEGER
+  quantity INTEGER
+  old_Stock INTEGER
+  new_Stock INTEGER
+}
+
+Ref: inflow.product_id > products.id
+Ref: outflow.product_id > products.id
+Ref: inventory.product_id > products.id

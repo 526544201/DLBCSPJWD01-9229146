@@ -21,7 +21,7 @@
     // TODO: Check for parameters
 
     // Database Connection
-    require("util/connection.php");
+    require('util/connection.php');
 
     // TODO: Query the database
 
