@@ -14,12 +14,9 @@
 
     // TODO: Add authentication
 
-    // Get payload
-    $payload = json_decode(file_get_contents('php://input'));
-
-    // Validate payload
-    if (isset($payload['type'])) {
-        $type = $payload['type'];
+    // Get Parameters from GET request
+    if (isset($_GET['type'])) {
+        $type = $_GET['type'];
     }
 
     // Database Connection

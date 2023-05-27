@@ -14,12 +14,9 @@
 
     // TODO: Add authentication
 
-    // Get payload
-    $payload = json_decode(file_get_contents('php://input'));
-
-    // Check for parameters
-    if (isset($payload['type'])) {
-        $type = $payload['type'];
+    // Get Parameters from GET request
+    if (isset($_GET['type'])) {
+        $type = $_GET['type'];
     } else {
         http_response_code(400);
         echo json_encode(array(
@@ -28,8 +25,8 @@
         die();
     }
 
-    if (isset($payload['changeId'])) {
-        $changeId = $payload['changeId'];
+    if (isset($_GET['changeId'])) {
+        $changeId = $_GET['changeId'];
     } else {
         http_response_code(400);
         echo json_encode(array(
