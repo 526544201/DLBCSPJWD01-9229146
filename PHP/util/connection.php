@@ -3,7 +3,7 @@
     $host_name = 'localhost';
     $database = 'javaportfolio';
     $user_name = 'root';
-    $password = '123456';
+    $password = '';
 
     $conn = mysqli_connect($host_name, $user_name, $password, $database);
 
