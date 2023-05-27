@@ -46,7 +46,7 @@ class Inventory extends Component {
 
         return ( // "Normal HTML" to be rendered
         
-            <IonContent className="ion-padding">  { /* Only one element can be returned, so we wrap everything in a IonContent. This IonContent holds the table */ }
+            <div>  { /* Only one element can be returned, so we wrap everything in a div. This div holds the table */ }
                 <form onSubmit={this.handleSubmit}>
                 {Object.entries(groupedProducts).map(([shelfName, products]) => ( // Object.entries returns an array of key-value pairs. 
                     // The key is the category id, and the value is the array of products. For each key-value pair, create an Table with the corresponding products
@@ -83,7 +83,7 @@ class Inventory extends Component {
                     ))}   
                 <IonButton type="submit">Submit</IonButton>
                 </form>
-            </IonContent>
+            </div>
         
         )
         
