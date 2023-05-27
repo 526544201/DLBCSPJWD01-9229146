@@ -15,16 +15,16 @@ const StockHistory: React.FC = () => {
 
     switch (selectedTab) { // Switch the component to render based on the selectedTab state
         case "inflow":
-            componentToRender = <ChangeHistory key="inflow" />; // Pass the vendorId to the component as a prop
+            componentToRender = <ChangeHistory key="Inflow" type="Inflow" />; // Pass the vendorId to the component as a prop
             break;
         case "outflow":
-            componentToRender = <ChangeHistory key="outflow" />; 
+            componentToRender = <ChangeHistory key="Outflow" type="Outflow" />; 
             break;
         case "inventory":
-            componentToRender = <ChangeHistory key="inventory" />
+            componentToRender = <ChangeHistory key="Inventory" type="Inventory" />
             break;
         default:
-            componentToRender = <ChangeHistory key="" />; 
+            componentToRender = <ChangeHistory key="" type="" />; 
             break;
     }
 
