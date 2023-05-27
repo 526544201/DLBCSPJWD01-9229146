@@ -1,14 +1,16 @@
 import React, { Component } from 'react';
 import axios from 'axios';
 import environment from '../environment';
-import { IonActionSheet, IonButton, IonContent } from '@ionic/react';
+import { IonActionSheet, IonButton, IonButtons, IonContent, IonHeader, IonModal, IonTitle, IonToolbar } from '@ionic/react';
 
 import './Tables.css';
 
 class ProductsTable extends Component {
     state = { // Holds data in the component
         products: [],
-        selectedProduct: null as any
+        selectedProduct: null as any,
+        modalProduct: null as any,
+        modalIsOpen: false
     }
 
     componentDidMount() { // Lifecycle method - When the component is mounted (on the screen)
@@ -26,10 +28,17 @@ class ProductsTable extends Component {
         this.setState({selectedProduct: product});
     };
 
+    showModal = (product: any) => {
+        console.log('Edit clicked on ' + product.name);
+        this.setState({modalProduct: product});
+        this.setState({modalIsOpen: true});
+    }
+
     render() { // Render the component
         const { products, selectedProduct } = this.state;
         return ( // "Normal HTML" to be rendered
             <IonContent className="ion-padding">  { /* Only one element can be returned, so we wrap everything in a IonContent. This IonContent holds the table */ }
+
                 <IonActionSheet
                     isOpen = {selectedProduct !== null} // If the user did not click on a product, do not show action sheet
                     header={selectedProduct?.name ? selectedProduct.name : "Error - This should not happen!"} // If selectedProduct is not null, set header to nane of product. Otherwise display error
@@ -37,26 +46,37 @@ class ProductsTable extends Component {
                     buttons={[
                         {
                             text: 'Edit',
+                            handler: () => this.showModal(selectedProduct)
+                        },
+                        {
+                            text: 'Delete',
+                            role: 'destructive',
+                            handler: () => console.log('Delete clicked on ' + selectedProduct?.name),
+                        },
+                        {
+                            text: 'Cancel',
+                            role: 'cancel',
                             data: {
-                              action: 'edit',
-                            },
-                          },
-                        {
-                          text: 'Delete',
-                          role: 'destructive',
-                          data: {
-                            action: 'delete',
-                          },
-                        },
-                        {
-                          text: 'Cancel',
-                          role: 'cancel',
-                          data: {
                             action: 'cancel',
-                          },
-                        },
+                            }
+                        }
                       ]}
-                    ></IonActionSheet>
+                    />
+
+                    <IonModal isOpen={this.state.modalIsOpen}>
+                        <IonHeader>
+                            <IonToolbar>
+                            <IonTitle>{this.state.modalProduct?.name}</IonTitle>
+                            <IonButtons slot="end">
+                                <IonButton onClick={() => this.setState({modalIsOpen: false})}>Close</IonButton>
+                            </IonButtons>
+                            </IonToolbar>
+                        </IonHeader>
+                        <IonContent className="ion-padding">
+                            <h2>{this.state.modalProduct?.name}</h2>
+                        </IonContent>
+                        </IonModal>
+        
                 <table className="table">
                     <thead>
                         <tr>
