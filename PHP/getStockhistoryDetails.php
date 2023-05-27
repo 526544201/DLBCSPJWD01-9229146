@@ -40,21 +40,21 @@
 
     // Query the database
     switch($type) {
-        case "inflow":
+        case "Inflow":
             $stmt = mysqli_prepare($conn, " SELECT *, products.name 
                                             FROM inflow 
                                             INNER JOIN products 
                                             ON inflow.product_id = products.id 
                                             WHERE change_id = ?");
             break;
-        case "outflow":
+        case "Outflow":
             $stmt = mysqli_prepare($conn, " SELECT *, products.name 
                                             FROM outflow 
                                             INNER JOIN products 
                                             ON outflow.product_id = products.id 
                                             WHERE change_id = ?");
             break;
-        case "inventory":
+        case "Inventory":
             $stmt = mysqli_prepare($conn, " SELECT *, products.name 
                                             FROM inventory 
                                             INNER JOIN products 

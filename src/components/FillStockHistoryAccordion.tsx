@@ -15,7 +15,11 @@ class FillStockHistoryAccordion extends Component<FillAccordionProps>{
     }
 
     componentDidMount() { // Lifecycle method - When the component is mounted (on the screen)
-        axios.get(environment.apiUrl + '/getStockhistoryDetails.php') // Get the stocks from the API via http request
+        axios.get(environment.apiUrl + '/getStockhistoryDetails.php', {// Get the stocks from the API via http request
+            params: {
+                changeId: this.props.changeId,
+                type: this.props.type 
+            }}) 
             .then(response => {
                 console.log(response); // DEBUG: Log the response to the console 
                 this.setState({ stockChanges: response.data }); // Set the state of the stocks array to the response data
@@ -39,7 +43,7 @@ class FillStockHistoryAccordion extends Component<FillAccordionProps>{
                 </thead>
                 <tbody>
                     {this.state.stockChanges.length > 0 && this.state.stockChanges.map((stockChange: any) => (
-                        <tr key={stockChange.id}>
+                        <tr key={stockChange.change_id}>
                             <td>{stockChange.name}</td>
                             <td>{stockChange.old_Stock}</td>
                             <td>{stockChange.quantity}</td>
