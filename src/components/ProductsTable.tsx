@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import axios from 'axios';
 import environment from '../environment';
-import { IonActionSheet, IonButton, IonButtons, IonContent, IonHeader, IonModal, IonTitle, IonToolbar } from '@ionic/react';
+import { IonActionSheet, IonButton, IonButtons, IonContent, IonHeader, IonModal, IonTitle, IonToolbar, IonItem, IonLabel, IonList, IonListHeader, IonInput, IonFooter } from '@ionic/react';
 
 import './Tables.css';
 
@@ -32,6 +32,12 @@ class ProductsTable extends Component {
         console.log('Edit clicked on ' + product.name);
         this.setState({modalProduct: product});
         this.setState({modalIsOpen: true});
+    }
+
+    handleModalSubmit = (event: any) => {
+        event.preventDefault();
+        console.log('Submit clicked on ' + this.state.modalProduct.name);
+        this.setState({modalIsOpen: false, modalProduct: null});
     }
 
     render() { // Render the component
@@ -66,14 +72,59 @@ class ProductsTable extends Component {
                     <IonModal isOpen={this.state.modalIsOpen}>
                         <IonHeader>
                             <IonToolbar>
-                            <IonTitle>{this.state.modalProduct?.name}</IonTitle>
+                            <IonTitle>Product Form</IonTitle>
                             <IonButtons slot="end">
-                                <IonButton onClick={() => this.setState({modalIsOpen: false})}>Close</IonButton>
+                                <IonButton onClick={() => {this.setState({modalIsOpen: false, modalProduct: null})}}>Close</IonButton>
                             </IonButtons>
                             </IonToolbar>
                         </IonHeader>
                         <IonContent className="ion-padding">
-                            <h2>{this.state.modalProduct?.name}</h2>
+                            {  /* TODO: Seperate component for modal? */}
+                            <form onSubmit={this.handleModalSubmit}>
+                                <IonList>
+                                    <IonListHeader lines="full">
+                                        <IonLabel>{this.state.modalProduct?.name}</IonLabel>
+                                    </IonListHeader>
+                                    <IonItem>
+                                        <IonLabel slot="start">Name</IonLabel>
+                                        <IonInput id="name" aria-label="Name" slot="end" value={this.state.modalProduct?.name} required></IonInput>
+                                    </IonItem>
+                                    <IonItem>
+                                        <IonLabel slot="start">Category</IonLabel>
+                                        <IonInput id="category" aria-label="Category" slot="end" value={this.state.modalProduct?.category_name} required></IonInput>
+                                    </IonItem>
+                                    <IonItem>
+                                        <IonLabel slot="start">Order Size</IonLabel>
+                                        <IonInput id="size" aria-label="Order Size" type="number" slot="end"value={this.state.modalProduct?.size} min='1' required></IonInput>
+                                    </IonItem>
+                                    <IonItem>
+                                        <IonLabel slot="start">Min Amount</IonLabel>
+                                        <IonInput id="minAmount" aria-label="Min Amount" type="number" slot="end" value={this.state.modalProduct?.minAmount} min='1' required></IonInput>
+                                    </IonItem>
+                                    <IonItem>
+                                        <IonLabel slot="start">Vendor</IonLabel>
+                                        <IonInput id="vendor" aria-label="Vendor" slot="end" value={this.state.modalProduct?.vendor_name} required></IonInput>
+                                    </IonItem>
+                                    <IonItem>
+                                        <IonLabel slot="start">ItemNo.</IonLabel>
+                                        <IonInput id="itemNo" aria-label="itemnumber" type="number" slot="end" value={this.state.modalProduct?.item_no_byvendor} min='1' required></IonInput>
+                                    </IonItem>
+                                    <IonItem>
+                                        <IonLabel slot="start">Shelf</IonLabel>
+                                        <IonInput id="shelf" aria-label="shelf" slot="end" value={this.state.modalProduct?.shelf_name} required></IonInput>
+                                    </IonItem>
+                                </IonList>
+                                <IonFooter>
+                                    <IonToolbar>
+                                        <IonButtons slot="start">
+                                            <IonButton onClick={() => {this.setState({modalIsOpen: false, modalProduct: null})}}>Cancle</IonButton>
+                                        </IonButtons>
+                                        <IonButtons slot="end">
+                                            <IonButton type="submit">Submit</IonButton> {/* TODO: Add functionality! */}
+                                        </IonButtons>
+                                    </IonToolbar>
+                                </IonFooter>
+                            </form>
                         </IonContent>
                         </IonModal>
         
