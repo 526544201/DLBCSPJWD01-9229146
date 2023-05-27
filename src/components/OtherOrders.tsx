@@ -2,7 +2,8 @@ import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import axios from 'axios';
 import environment from '../environment';
-import { IonAccordion, IonAccordionGroup, IonItem, IonLabel } from '@ionic/react';
+import { IonAccordion, IonAccordionGroup, IonContent, IonItem, IonLabel } from '@ionic/react';
+import "./Tables.css";
 
 class OtherOrders extends Component {
 
@@ -43,41 +44,43 @@ class OtherOrders extends Component {
 
 
         return ( // "Normal HTML" to be rendered
-            <IonAccordionGroup>
-                {Object.entries(groupedProducts).map(([vendorId, products]) => ( // Typescript shenanigans / Object.entries returns an array of key-value pairs. 
-                    // The key is the vendor id, and the value is the array of products. For each key-value pair, create an IonAccordion
-                    <IonAccordion key={vendorId}> 
-                        <IonItem slot="header" color="light">
-                            <IonLabel>{vendorId}</IonLabel>
-                        </IonItem>
-                        <div className="ion-padding" slot="content">
-                            <table>
-                                <thead>
-                                    <tr>
-                                        <th>Name</th>
-                                        <th>Stock</th>
-                                        <th>Minimum</th>
-                                        <th>Order Amount</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    {(products as any[]).map((product: any) => ( // Again, Typescript shenanigans / Fill the table with the corresponding products
-                                        <tr key={product.id}>
-                                            <td>{product.name}</td>
-                                            <td>{product.stock}</td>
-                                            <td>{product.minAmount}</td>
-                                            <td>
-                                                {Math.ceil((product.minAmount - product.stock) / product.size)}
-                                                {product.size > 1 ? " Boxes" : ""}
-                                            </td>
+            <IonContent className="ion-padding">
+                <IonAccordionGroup>
+                    {Object.entries(groupedProducts).map(([vendorId, products]) => ( // Typescript shenanigans / Object.entries returns an array of key-value pairs. 
+                        // The key is the vendor id, and the value is the array of products. For each key-value pair, create an IonAccordion
+                        <IonAccordion key={vendorId}> 
+                            <IonItem slot="header" color="light">
+                                <IonLabel>{vendorId}</IonLabel>
+                            </IonItem>
+                            <div className="ion-padding" slot="content">
+                                <table className="table">
+                                    <thead>
+                                        <tr>
+                                            <th>Name</th>
+                                            <th>Stock</th>
+                                            <th>Minimum</th>
+                                            <th>Order Amount</th>
                                         </tr>
-                                    ))}
-                                </tbody>
-                            </table>
-                        </div>
-                    </IonAccordion>
-                ))}
-            </IonAccordionGroup>
+                                    </thead>
+                                    <tbody>
+                                        {(products as any[]).map((product: any) => ( // Again, Typescript shenanigans / Fill the table with the corresponding products
+                                            <tr key={product.id}>
+                                                <td>{product.name}</td>
+                                                <td>{product.stock}</td>
+                                                <td>{product.minAmount}</td>
+                                                <td>
+                                                    {Math.ceil((product.minAmount - product.stock) / product.size)}
+                                                    {product.size > 1 ? " Boxes" : ""}
+                                                </td>
+                                            </tr>
+                                        ))}
+                                    </tbody>
+                                </table>
+                            </div>
+                        </IonAccordion>
+                    ))}
+                </IonAccordionGroup>
+            </IonContent>
         )
     }
 }

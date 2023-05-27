@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import axios from 'axios';
 import environment from '../environment';
-import { IonButton, IonInput } from '@ionic/react';
+import { IonButton, IonContent, IonInput } from '@ionic/react';
 
 class LoginComponent extends Component {
     state = { // Holds data in the component
@@ -40,7 +40,7 @@ class LoginComponent extends Component {
 
     render() { // Render the component
         return ( // "Normal HTML" to be rendered
-            <div>  { /* Only one element can be returned, so we wrap everything in a div. This div holds the table */ }
+            <IonContent className="ion-padding">  { /* Only one element can be returned, so we wrap everything in a IonContent. This IonContent holds the table */ }
                 <form onSubmit={this.handleSubmit}>
                     <IonInput
                         type="email"
@@ -58,7 +58,7 @@ class LoginComponent extends Component {
                     />
                     <IonButton type="submit">Log In</IonButton>
                 </form>
-            </div>
+            </IonContent>
         )
     }
 }

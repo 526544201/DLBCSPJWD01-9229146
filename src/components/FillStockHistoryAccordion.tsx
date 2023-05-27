@@ -1,7 +1,8 @@
 import React, { Component } from 'react';
 import axios from 'axios';
 import environment from '../environment';
-import { IonAccordion, IonAccordionGroup, IonItem, IonLabel } from '@ionic/react';
+import { IonAccordion, IonAccordionGroup, IonContent, IonItem, IonLabel } from '@ionic/react';
+import "./Tables.css";
 
 interface FillAccordionProps {
     changeId: number;
@@ -31,26 +32,26 @@ class FillStockHistoryAccordion extends Component<FillAccordionProps>{
 
     render() { // Render the component
         return ( // "Normal HTML" to be rendered
-            <table>
-                <thead>
-                    <tr>
-                        <th>Product</th>
-                        <th>Old Stock</th>
-                        <th>Change</th>
-                        <th>New Stock</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    {this.state.stockChanges.length > 0 && this.state.stockChanges.map((stockChange: any) => (
-                        <tr key={`change${stockChange.change_id}`}>
-                            <td>{stockChange.name}</td>
-                            <td>{stockChange.old_Stock}</td>
-                            <td>{stockChange.quantity}</td>
-                            <td>{stockChange.new_Stock}</td>
+                <table className="table" >
+                    <thead>
+                        <tr>
+                            <th>Product</th>
+                            <th>Old Stock</th>
+                            <th>Change</th>
+                            <th>New Stock</th>
                         </tr>
-                    ))}
-                </tbody>
-            </table>
+                    </thead>
+                    <tbody>
+                        {this.state.stockChanges.length > 0 && this.state.stockChanges.map((stockChange: any) => (
+                            <tr key={`change${stockChange.change_id}`}>
+                                <td>{stockChange.name}</td>
+                                <td>{stockChange.old_Stock}</td>
+                                <td>{stockChange.quantity}</td>
+                                <td>{stockChange.new_Stock}</td>
+                            </tr>
+                        ))}
+                    </tbody>
+                </table>
         )
     }
 }

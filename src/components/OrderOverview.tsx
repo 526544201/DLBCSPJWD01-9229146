@@ -2,6 +2,8 @@ import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import axios from 'axios';
 import environment from '../environment';
+import "./Tables.css";
+import { IonContent } from '@ionic/react';
 
 interface OrderOverviewProps { // Create an interface for the props that are passed to this component - Otherwise TypeScript will complain
     vendorId: string 
@@ -31,8 +33,8 @@ class OrderOverview extends Component<OrderOverviewProps> {
 
     render() { // Render the component
         return ( // "Normal HTML" to be rendered
-            <div>  { /* Only one element can be returned, so we wrap everything in a div. This div holds the table */ }
-                <table>
+            <IonContent className="ion-padding">  { /* Only one element can be returned, so we wrap everything in a IonContent. This IonContent holds the table */ }
+                <table className="table">
                     <thead>
                         <tr>
                             <th>Name</th>
@@ -56,7 +58,7 @@ class OrderOverview extends Component<OrderOverviewProps> {
                         ))}
                     </tbody>
                 </table>
-            </div>
+            </IonContent>
         )
     }
 }

@@ -2,6 +2,10 @@ import React, { Component } from 'react';
 import axios from 'axios';
 import environment from '../environment';
 
+
+import './Tables.css';
+import { IonContent } from '@ionic/react';
+
 class ProductsTable extends Component {
     state = { // Holds data in the component
         products: [] ,
@@ -20,8 +24,8 @@ class ProductsTable extends Component {
 
     render() { // Render the component
         return ( // "Normal HTML" to be rendered
-            <div>  { /* Only one element can be returned, so we wrap everything in a div. This div holds the table */ }
-                <table>
+            <IonContent className="ion-padding">  { /* Only one element can be returned, so we wrap everything in a IonContent. This IonContent holds the table */ }
+                <table className="table">
                     <thead>
                         <tr>
                             <th>Name</th>
@@ -33,7 +37,7 @@ class ProductsTable extends Component {
                     <tbody>
                         { /* Loop through the products array and create a row for each product */ }
                         {this.state.products.map((product: any) => (
-                            <tr key={product.id}> 
+                            <tr key={product.id} className="clickable"> 
                                 <td>{product.name}</td>
                                 <td>{product.vendor_id}</td>
                                 <td>{product.stock}</td>
@@ -42,7 +46,7 @@ class ProductsTable extends Component {
                         ))}
                     </tbody>
                 </table>
-            </div>
+            </IonContent>
         )
     }
 }

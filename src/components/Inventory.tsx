@@ -1,7 +1,8 @@
 import React, { Component } from 'react';
 import axios from 'axios';
 import environment from '../environment';
-import { IonButton, IonInput } from '@ionic/react';
+import { IonButton, IonContent, IonInput } from '@ionic/react';
+import "./Tables.css";
 
 class Inventory extends Component {
     state = { // Holds data in the component
@@ -45,14 +46,14 @@ class Inventory extends Component {
 
         return ( // "Normal HTML" to be rendered
         
-            <div>  { /* Only one element can be returned, so we wrap everything in a div. This div holds the table */ }
+            <IonContent className="ion-padding">  { /* Only one element can be returned, so we wrap everything in a IonContent. This IonContent holds the table */ }
                 <form onSubmit={this.handleSubmit}>
                 {Object.entries(groupedProducts).map(([shelfName, products]) => ( // Object.entries returns an array of key-value pairs. 
                     // The key is the category id, and the value is the array of products. For each key-value pair, create an Table with the corresponding products
                     <div key={shelfName}>
                         <div className="ion-padding" slot="content">
                             <h2>{shelfName}</h2>
-                            <table>
+                            <table className="table">
                                 <thead>
                                     <tr>
                                         <th>Name</th>
@@ -82,7 +83,7 @@ class Inventory extends Component {
                     ))}   
                 <IonButton type="submit">Submit</IonButton>
                 </form>
-            </div>
+            </IonContent>
         
         )
         

@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import axios from 'axios';
 import environment from '../environment';
-import { IonAccordion, IonAccordionGroup, IonItem, IonLabel } from '@ionic/react';
+import { IonAccordion, IonAccordionGroup, IonContent, IonItem, IonLabel } from '@ionic/react';
 import FillStockHistoryAccordion from './FillStockHistoryAccordion';
 
 interface changeHistoryProps {
@@ -30,18 +30,20 @@ class ChangeHistory extends Component<changeHistoryProps> {
 
     render() { // Render the component
         return ( // "Normal HTML" to be rendered
-            <IonAccordionGroup >
-                {this.state.stocks.map((stock: any) => (
-                    <IonAccordion value={stock.id} key={stock.id} >
-                        <IonItem slot="header" color="light">
-                            <IonLabel>{stock.type}</IonLabel>
-                        </IonItem>
-                        <div className="ion-padding" slot="content">
-                            <FillStockHistoryAccordion changeId={stock.id} type={stock.type} />
-                        </div>
-                    </IonAccordion>
-                ))}
-            </ IonAccordionGroup>
+            <IonContent className="ion-padding">
+                <IonAccordionGroup >
+                    {this.state.stocks.map((stock: any) => (
+                        <IonAccordion value={stock.id} key={stock.id} >
+                            <IonItem slot="header" color="light">
+                                <IonLabel>{stock.date} - {stock.type}</IonLabel>
+                            </IonItem>
+                            <div className="ion-padding" slot="content">
+                                <FillStockHistoryAccordion changeId={stock.id} type={stock.type} />
+                            </div>
+                        </IonAccordion>
+                    ))}
+                </ IonAccordionGroup>
+            </IonContent>
         )
     }
 }
