@@ -36,9 +36,8 @@ class ChangeHistory extends Component<changeHistoryProps> {
                         <IonItem slot="header" color="light">
                             <IonLabel>{stock.type}</IonLabel>
                         </IonItem>
-                        <div>
-                            <h1>Hallo </h1>
-                            {/*<FillStockHistoryAccordion changeId={stock.id} type={stock.type} />*/}
+                        <div className="ion-padding" slot="content">
+                            <FillStockHistoryAccordion changeId={stock.id} type={stock.type} />
                         </div>
                     </IonAccordion>
                 ))}
