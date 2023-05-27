@@ -2,6 +2,11 @@ import React from 'react';
 import { IonApp, IonRouterOutlet, IonSplitPane, setupIonicReact } from '@ionic/react';
 import { IonReactRouter } from '@ionic/react-router';
 import { Redirect, Route } from 'react-router-dom';
+
+/* Pages */
+import Stockmanagement from './pages/Stockmanagement';
+import Login from './pages/Login';
+import StockHistory from './pages/StockHistory';
 import Menu from './components/Menu';
 import Products from './pages/Products';
 import Order from './pages/Order';
@@ -24,8 +29,6 @@ import '@ionic/react/css/display.css';
 
 /* Theme variables */
 import './theme/variables.css';
-import Stockmanagement from './pages/Stockmanagement';
-import Login from './pages/Login';
 
 setupIonicReact();
 
@@ -47,6 +50,9 @@ const App: React.FC = () => {
             </Route>
             <Route path="/page/Stock" exact={true}>
               <Stockmanagement />
+            </Route>
+            <Route path="/page/Stockhistory" exact={true}>
+              <StockHistory />
             </Route>
             <Route path="/page/login" exact={true}>
               <Login />

@@ -43,6 +43,12 @@ const appPages: AppPage[] = [
     mdIcon: heartSharp
   },
   {
+    title: 'Stockhistory', // TODO: Delete this
+    url: '/page/Stockhistory',
+    iosIcon: heartOutline,
+    mdIcon: heartSharp
+  },
+  {
     title: 'Login', // TODO: Delete this
     url: '/page/Login',
     iosIcon: heartOutline,

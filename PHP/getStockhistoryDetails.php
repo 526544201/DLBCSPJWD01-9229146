@@ -14,27 +14,83 @@
 
     // TODO: Add authentication
 
-    // TODO: Get payload
+    // Get payload
+    $payload = json_decode(file_get_contents('php://input'));
 
-    // TODO: Validate payload
+    // Check for parameters
+    if (isset($payload['type'])) {
+        $type = $payload['type'];
+    } else {
+        http_response_code(400);
+        echo json_encode(array(
+            "error" => "No type provided"
+        ));
+        die();
+    }
 
-    // TODO: Check for parameters
+    if (isset($payload['changeId'])) {
+        $changeId = $payload['changeId'];
+    } else {
+        http_response_code(400);
+        echo json_encode(array(
+            "error" => "No changeId provided"
+        ));
+        die();
+    }
 
     // Database Connection
     require("util/connection.php");
 
-    // TODO: Query the database
-
-    // Check for errors
-    if (!$result) {
-        die("Query failed: " . mysqli_error($conn));
+    // Query the database
+    switch($type) {
+        case "inflow":
+            $stmt = mysqli_prepare($conn, " SELECT *, products.name 
+                                            FROM inflow 
+                                            INNER JOIN products 
+                                            ON inflow.product_id = products.id 
+                                            WHERE change_id = ?");
+            break;
+        case "outflow":
+            $stmt = mysqli_prepare($conn, " SELECT *, products.name 
+                                            FROM outflow 
+                                            INNER JOIN products 
+                                            ON outflow.product_id = products.id 
+                                            WHERE change_id = ?");
+            break;
+        case "inventory":
+            $stmt = mysqli_prepare($conn, " SELECT *, products.name 
+                                            FROM inventory 
+                                            INNER JOIN products 
+                                            ON inventory.product_id = products.id 
+                                            WHERE change_id = ?");
+            break;
+        default:
+            http_response_code(400);
+            echo json_encode(array(
+                "error" => "Invalid type provided"
+            ));
+            die();
     }
 
-    // TODO: Formulate the response
+    // Bind the parameter
+    mysqli_stmt_bind_param($stmt, "i", $changeId);
+
+    // Execute the statement
+    mysqli_stmt_execute($stmt);
+
+    // Get the result
+    $result = mysqli_stmt_get_result($stmt);
+
+    // Formulate the response
+    $stockchanges = array();
+    while ($row = mysqli_fetch_assoc($result)) {
+        $stockchanges[] = $row;
+    }
 
     // Close the database connection
     mysqli_close($conn);
 
-    // TODO: Send the response
-
+    // Send the response
+    http_response_code(200);
+    echo json_encode($stockchanges);
 ?>
