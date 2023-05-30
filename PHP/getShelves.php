@@ -18,7 +18,7 @@
     require("util/connection.php");
 
     // Query the database
-    $query = "SELECT * FROM vendors";
+    $query = "SELECT * FROM shelves";
                 
     $result = mysqli_query($conn, $query);
 

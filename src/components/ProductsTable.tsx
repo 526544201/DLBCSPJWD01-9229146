@@ -1,43 +1,79 @@
 import React, { Component } from 'react';
 import axios from 'axios';
 import environment from '../environment';
-import { IonActionSheet, IonButton, IonButtons, IonContent, IonHeader, IonModal, IonTitle, IonToolbar, IonItem, IonLabel, IonList, IonListHeader, IonInput, IonFooter } from '@ionic/react';
+import { IonActionSheet, IonButton, IonButtons, IonContent, IonHeader, IonModal, IonTitle, IonToolbar, IonItem, IonLabel, IonList, IonListHeader, IonInput, IonFooter, IonSelect, IonSelectOption } from '@ionic/react';
 
 import './Tables.css';
 
 class ProductsTable extends Component {
     state = { // Holds data in the component
         products: [],
+        vendors: [],
+        categories: [],
+        shelves: [],
         selectedProduct: null as any,
         modalProduct: null as any,
         modalIsOpen: false
     }
 
-    componentDidMount() { // Lifecycle method - When the component is mounted (on the screen)
+    getProducts() {
         axios.get(environment.apiUrl + '/getProducts.php') // Get the products from the API via http request
-            .then(response => {
-                console.log(response); // DEBUG: Log the response to the console 
-                this.setState({ products: response.data }); // Set the state of the products array to the response data
-            })
-            .catch(error => { // Catch any errors
-                console.log(error); // DEBUG: Log the error to the console
-            });
+        .then(response => {
+            console.log(response); // DEBUG: Log the response to the console 
+            this.setState({ products: response.data }); // Set the state of the products array to the response data
+        })
+        .catch(error => { // Catch any errors
+            console.log(error); // DEBUG: Log the error to the console
+        });
     }
 
-    openActionSheet = (product: any) => {
-        this.setState({selectedProduct: product});
+    getVendors() {
+        axios.get(environment.apiUrl + '/getVendors.php') // Get the products from the API via http request
+        .then(response => {
+            console.log(response); // DEBUG: Log the response to the console 
+            this.setState({ vendors: response.data }); // Set the state of the products array to the response data
+        })
+    }
+
+    getCategories() {
+        axios.get(environment.apiUrl + '/getCategories.php') // Get the products from the API via http request
+        .then(response => {
+            console.log(response); // DEBUG: Log the response to the console 
+            this.setState({ categories: response.data }); // Set the state of the products array to the response data
+        })
+    }
+
+    getShelves() {
+        axios.get(environment.apiUrl + '/getShelves.php') // Get the products from the API via http request
+        .then(response => {
+            console.log(response); // DEBUG: Log the response to the console 
+            this.setState({ shelves: response.data }); // Set the state of the products array to the response data
+        })
+    }
+
+    componentDidMount() { // Lifecycle method - When the component is mounted (on the screen)
+        this.getProducts();
+    }
+
+    openActionSheet = (product: any) => { // Open the action sheet when a product is clicked
+        this.setState({selectedProduct: product}); // Set the selectedProduct to the product that was clicked
     };
 
-    showModal = (product: any) => {
-        console.log('Edit clicked on ' + product.name);
-        this.setState({modalProduct: product});
-        this.setState({modalIsOpen: true});
+    showModal = (product: any) => { // Open the modal with info about the product that was clicked
+        console.log('Edit clicked on ' + product.name);  // DEBUG
+        //For population of the form, get the vendors, categories and shelves
+        this.getVendors();
+        this.getCategories();
+        this.getShelves();
+        this.setState({modalProduct: product}); // Set the modalProduct to the product that was clicked
+        this.setState({modalIsOpen: true}); // Open the modal
     }
 
-    handleModalSubmit = (event: any) => {
-        event.preventDefault();
-        console.log('Submit clicked on ' + this.state.modalProduct.name);
-        this.setState({modalIsOpen: false, modalProduct: null});
+    handleModalSubmit = (event: any) => { 
+        event.preventDefault(); 
+        // TODO: Add save functionality!
+        console.log('Submit clicked on ' + this.state.modalProduct.name); // DEBUG
+        this.setState({modalIsOpen: false, modalProduct: null}); // Close the modal
     }
 
     render() { // Render the component
@@ -66,8 +102,8 @@ class ProductsTable extends Component {
                             action: 'cancel',
                             }
                         }
-                      ]}
-                    />
+                    ]}
+                />
 
                     <IonModal isOpen={this.state.modalIsOpen}>
                         <IonHeader>
@@ -87,31 +123,43 @@ class ProductsTable extends Component {
                                     </IonListHeader>
                                     <IonItem>
                                         <IonLabel slot="start">Name</IonLabel>
-                                        <IonInput id="name" aria-label="Name" slot="end" value={this.state.modalProduct?.name} required></IonInput>
+                                        <IonInput id="name" aria-label="Name" slot="end" className="ion-text-right" value={this.state.modalProduct?.name} required></IonInput>
                                     </IonItem>
                                     <IonItem>
                                         <IonLabel slot="start">Category</IonLabel>
-                                        <IonInput id="category" aria-label="Category" slot="end" value={this.state.modalProduct?.category_name} required></IonInput>
+                                        <IonSelect aria-label="Category" interface="action-sheet" slot="end" value={this.state.modalProduct?.category_id} >
+                                            {this.state.categories.map((category: any) => (
+                                                <IonSelectOption key={category.id} value={category.id}>{category.name}</IonSelectOption>
+                                            ))}
+                                        </IonSelect>
                                     </IonItem>
                                     <IonItem>
                                         <IonLabel slot="start">Order Size</IonLabel>
-                                        <IonInput id="size" aria-label="Order Size" type="number" slot="end"value={this.state.modalProduct?.size} min='1' required></IonInput>
+                                        <IonInput id="size" aria-label="Order Size" type="number" slot="end" className="ion-text-right" value={this.state.modalProduct?.size} min='1' required></IonInput>
                                     </IonItem>
                                     <IonItem>
                                         <IonLabel slot="start">Min Amount</IonLabel>
-                                        <IonInput id="minAmount" aria-label="Min Amount" type="number" slot="end" value={this.state.modalProduct?.minAmount} min='1' required></IonInput>
+                                        <IonInput id="minAmount" aria-label="Min Amount" type="number" slot="end" className="ion-text-right" value={this.state.modalProduct?.minAmount} min='1' required></IonInput>
                                     </IonItem>
                                     <IonItem>
                                         <IonLabel slot="start">Vendor</IonLabel>
-                                        <IonInput id="vendor" aria-label="Vendor" slot="end" value={this.state.modalProduct?.vendor_name} required></IonInput>
+                                        <IonSelect aria-label="Vendor" interface="action-sheet" slot="end" value={this.state.modalProduct?.vendor_id} >
+                                            {this.state.vendors.map((vendor: any) => (
+                                                <IonSelectOption key={vendor.id} value={vendor.id}>{vendor.name}</IonSelectOption>
+                                            ))}
+                                        </IonSelect>
                                     </IonItem>
                                     <IonItem>
                                         <IonLabel slot="start">ItemNo.</IonLabel>
-                                        <IonInput id="itemNo" aria-label="itemnumber" type="number" slot="end" value={this.state.modalProduct?.item_no_byvendor} min='1' required></IonInput>
+                                        <IonInput id="itemNo" aria-label="Item Number" type="number" slot="end" className="ion-text-right" value={this.state.modalProduct?.item_no_byvendor} min='1' required></IonInput>
                                     </IonItem>
                                     <IonItem>
                                         <IonLabel slot="start">Shelf</IonLabel>
-                                        <IonInput id="shelf" aria-label="shelf" slot="end" value={this.state.modalProduct?.shelf_name} required></IonInput>
+                                        <IonSelect aria-label="Shelf" interface="action-sheet" slot="end" value={this.state.modalProduct?.shelf_id} >
+                                            {this.state.shelves.map((shelf: any) => (
+                                                <IonSelectOption key={shelf.id} value={shelf.id}>{shelf.name}</IonSelectOption>
+                                            ))}
+                                        </IonSelect>
                                     </IonItem>
                                 </IonList>
                                 <IonFooter>
@@ -120,7 +168,7 @@ class ProductsTable extends Component {
                                             <IonButton onClick={() => {this.setState({modalIsOpen: false, modalProduct: null})}}>Cancle</IonButton>
                                         </IonButtons>
                                         <IonButtons slot="end">
-                                            <IonButton type="submit">Submit</IonButton> {/* TODO: Add functionality! */}
+                                            <IonButton type="submit">Submit</IonButton>
                                         </IonButtons>
                                     </IonToolbar>
                                 </IonFooter>
