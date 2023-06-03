@@ -14,27 +14,53 @@
 
     // TODO: Add authentication
 
-    // TODO: Get payload
+    // Get payload
+    if($_SERVER['REQUEST_METHOD'] == 'POST'){
+        $jsonPayload = json_decode(file_get_contents('php://input'), true);
+    } else {
+        http_response_code(400);
+        die("Bad request method");
+    };
 
     // TODO: Validate payload
-
-    // TODO: Check for parameters
+    if(!isset($jsonPayload['id'])) {
+        http_response_code(400);
+        echo json_encode(array(
+            "error" => "No id provided"
+        ));
+        die();
+    } else {
+        $id = $jsonPayload['id'];
+    }
 
     // Database Connection
     require("util/connection.php");
 
-    // TODO: Query the database
+    // Query the database
+    $stmt = mysqli_prepare($conn, "UPDATE products SET active = 0 WHERE id = ?");
+    mysqli_stmt_bind_param($stmt, "i", $id);
 
-    // Check for errors
-    if (!$result) {
-        die("Query failed: " . mysqli_error($conn));
+    // Execute the statement
+    mysqli_stmt_execute($stmt);
+
+    // Get the result
+    $result = mysqli_stmt_get_result($stmt);
+
+    // Check if rows were affected
+    if(mysqli_affected_rows($conn) == 0){
+        // Send status code 404 and error message
+        http_response_code(404);
+        echo json_encode(array(
+            "error" => "Product not found"
+        ));
+        die();
     }
-
-    // TODO: Formulate the response
-
     // Close the database connection
     mysqli_close($conn);
 
-    // TODO: Send the response
-
+    // Send the response
+    http_response_code(200);
+    echo json_encode(array(
+        "message" => "Product deleted"
+    ));
 ?>

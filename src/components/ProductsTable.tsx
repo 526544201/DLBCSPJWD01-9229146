@@ -62,6 +62,18 @@ class ProductsTable extends Component {
         this.setState({selectedProduct: product}); // Set the selectedProduct to the product that was clicked
     };
 
+    deleteProduct = (product: any) => { // Delete the product that was clicked
+        console.log('Delete clicked on ' + product.name); // DEBUG
+        axios.post(environment.apiUrl + '/deleteProduct.php', {id: product.id}) // Send the id of the product to the API via http request
+        .then(response => {
+            console.log(response); // DEBUG: Log the response to the console
+            this.getProducts(); // Update the products
+        })
+        .catch(error => { // Catch any errors
+            console.log(error); // DEBUG: Log the error to the console
+        });
+    }
+
     showModal = (product: any, type: any) => { // Open the modal with info about the product that was clicked
         console.log('Edit clicked on ' + product.name);  // DEBUG
         //For population of the form, get the vendors, categories and shelves
@@ -162,7 +174,7 @@ class ProductsTable extends Component {
                         {
                             text: 'Delete',
                             role: 'destructive',
-                            handler: () => console.log('Delete clicked on ' + selectedProduct?.name),
+                            handler: () => this.deleteProduct(selectedProduct),
                         },
                         {
                             text: 'Cancel',
