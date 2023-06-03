@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import axios from 'axios';
 import environment from '../environment';
-import { IonActionSheet, IonButton, IonButtons, IonContent, IonHeader, IonModal, IonTitle, IonToolbar, IonItem, IonLabel, IonList, IonListHeader, IonInput, IonFooter, IonSelect, IonSelectOption, IonFab, IonFabButton, IonIcon, IonToast } from '@ionic/react';
+import { IonActionSheet, IonButton, IonButtons, IonContent, IonHeader, IonModal, IonTitle, IonToolbar, IonItem, IonLabel, IonList, IonListHeader, IonInput, IonFooter, IonSelect, IonSelectOption, IonFab, IonFabButton, IonIcon, IonToast, useIonAlert, IonAlert } from '@ionic/react';
 
 import './Tables.css';
 import { add } from 'ionicons/icons';
@@ -18,7 +18,9 @@ class ProductsTable extends Component {
         modalIsOpen: false,
         toastIsOpen: false,
         toastDuration: 0,
-        toastMessage: ""
+        toastMessage: "",
+        alertIsOpen: false,
+        productToDelete: null as any
     }
 
     getProducts() {
@@ -186,7 +188,10 @@ class ProductsTable extends Component {
                         {
                             text: 'Delete',
                             role: 'destructive',
-                            handler: () => this.deleteProduct(selectedProduct),
+                            handler: () =>  {
+                                this.setState({productToDelete: selectedProduct});
+                                this.setState({alertIsOpen: true});
+                            }
                         },
                         {
                             text: 'Cancel',
@@ -198,7 +203,7 @@ class ProductsTable extends Component {
                     ]}
                 />
 
-                    <IonModal isOpen={this.state.modalIsOpen}>
+                    <IonModal isOpen={this.state.modalIsOpen} style={{ '--height': '80vh' }}>
                         <IonHeader>
                             <IonToolbar>
                             <IonTitle>Product Form</IonTitle>
@@ -340,7 +345,7 @@ class ProductsTable extends Component {
                                 </IonFooter>
                             </form>
                         </IonContent>
-                        </IonModal>
+                    </IonModal>
         
                 <table className="table">
                     <colgroup>
@@ -378,6 +383,25 @@ class ProductsTable extends Component {
                     message={this.state.toastMessage}
                     onDidDismiss={() => this.setToast(false)}
                     duration={this.state.toastDuration}
+                />
+
+                <IonAlert
+                    isOpen={this.state.alertIsOpen}
+                    onDidDismiss={() => { 
+                        this.setState({productToDelete: null});
+                        this.setState({alertIsOpen: false})}}
+                    header={'Delete Product'}
+                    message={'Are you sure you want to delete ' + this.state.productToDelete?.name + '?'}
+                    buttons={[
+                        {
+                            text: 'Cancel',
+                            role: 'cancel'
+                        },
+                        {
+                            text: 'Delete',
+                            handler: () => this.deleteProduct(this.state.productToDelete)
+                        }
+                    ]}
                 />
             </IonContent>
         )
