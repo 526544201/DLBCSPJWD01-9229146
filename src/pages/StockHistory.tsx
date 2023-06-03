@@ -5,7 +5,7 @@ import ChangeHistory from '../components/ChangeHistory';
 
 const StockHistory: React.FC = () => {
 
-    const [selectedTab, setSelectedTab] = useState("inflow"); // Save the selected tab in the state, default is "inflow", change it via setSelectedTab
+    const [selectedTab, setSelectedTab] = useState("all"); // Save the selected tab in the state, default is "inflow", change it via setSelectedTab
 
     const handleTabChange = (event: CustomEvent) => { // Handle the click on another tab
         setSelectedTab(event.detail.value); // Set the selectedTab state to the value of the clicked tab
@@ -14,6 +14,9 @@ const StockHistory: React.FC = () => {
     let componentToRender; // Initialize a variable to store the component to render
 
     switch (selectedTab) { // Switch the component to render based on the selectedTab state
+        case "all":
+            componentToRender = <ChangeHistory key="All" type="All" />; // Pass the vendorId to the component as a prop
+            break;
         case "inflow":
             componentToRender = <ChangeHistory key="Inflow" type="Inflow" />; // Pass the vendorId to the component as a prop
             break;
@@ -47,15 +50,18 @@ const StockHistory: React.FC = () => {
           </IonHeader>
           <IonToolbar>
               <IonSegment value={selectedTab} onIonChange={handleTabChange}>
-                  <IonSegmentButton value="inflow">
-                      <IonLabel>Inflow</IonLabel>
-                  </IonSegmentButton>
-                  <IonSegmentButton value="outflow">
-                      <IonLabel>Outflow</IonLabel>
-                  </IonSegmentButton>
-                  <IonSegmentButton value="inventory">
-                      <IonLabel>Inventory</IonLabel>
-                  </IonSegmentButton>
+                <IonSegmentButton value="all">
+                      <IonLabel>All</IonLabel>
+                </IonSegmentButton>
+                <IonSegmentButton value="inflow">
+                    <IonLabel>Inflow</IonLabel>
+                </IonSegmentButton>
+                <IonSegmentButton value="outflow">
+                    <IonLabel>Outflow</IonLabel>
+                </IonSegmentButton>
+                <IonSegmentButton value="inventory">
+                    <IonLabel>Inventory</IonLabel>
+                </IonSegmentButton>
               </IonSegment>
           </IonToolbar>
           {componentToRender} {/* Render the component based on the selectedTab state */}

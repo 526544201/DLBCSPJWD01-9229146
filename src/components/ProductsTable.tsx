@@ -141,9 +141,8 @@ class ProductsTable extends Component {
             <IonContent className="ion-padding">  { /* Only one element can be returned, so we wrap everything in a IonContent. This IonContent holds the table */ }
                 <IonFab 
                     slot="fixed" 
-                    vertical="top" 
+                    vertical="bottom" 
                     horizontal="end" 
-                    edge={true}
                     style={{zIndex: "999"}} 
                     onClick= {() => this.showModal({id: null, name: "", category_id: null, size: null, minAmount: null, vendor_id: null, item_no_byvendor: null, shelf_id: null, shelf_order: null}, "add")} // When the fab is clicked, open the modal with an empty product
                     > 

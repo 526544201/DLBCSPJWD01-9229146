@@ -17,19 +17,24 @@
     // Get Parameters from GET request
     if (isset($_GET['type'])) {
         $type = $_GET['type'];
+    } else {
+        http_response_code(400);
+        echo json_encode(array(
+            "error" => "No type provided"
+        ));
     }
 
     // Database Connection
     require("util/connection.php");
 
     // Query the database
-    if(isset($type)){
-        // If type is set, get stockchanges of that type
+    if($type == "All"){      
+        $stmt = mysqli_prepare($conn, "SELECT * FROM stockchanges");
+
+    } else {
+        // If type is set, get all stockchanges
         $stmt = mysqli_prepare($conn, "SELECT * FROM stockchanges WHERE type = ?");
         mysqli_stmt_bind_param($stmt, "s", $type);
-    } else {
-        // If type is not set, get all stockchanges
-        $stmt = mysqli_prepare($conn, "SELECT * FROM stockchanges");
     }
 
     // Execute the statement
