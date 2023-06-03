@@ -1,9 +1,11 @@
 import React, { Component } from 'react';
 import axios from 'axios';
 import environment from '../environment';
-import { IonActionSheet, IonButton, IonButtons, IonContent, IonHeader, IonModal, IonTitle, IonToolbar, IonItem, IonLabel, IonList, IonListHeader, IonInput, IonFooter, IonSelect, IonSelectOption } from '@ionic/react';
+import { IonActionSheet, IonButton, IonButtons, IonContent, IonHeader, IonModal, IonTitle, IonToolbar, IonItem, IonLabel, IonList, IonListHeader, IonInput, IonFooter, IonSelect, IonSelectOption, IonFab, IonFabButton, IonIcon } from '@ionic/react';
 
 import './Tables.css';
+import { add } from 'ionicons/icons';
+import { Z_ASCII } from 'zlib';
 
 class ProductsTable extends Component {
     state = { // Holds data in the component
@@ -13,6 +15,7 @@ class ProductsTable extends Component {
         shelves: [],
         selectedProduct: null as any,
         modalProduct: null as any,
+        modalType: null as any,
         modalIsOpen: false
     }
 
@@ -59,13 +62,14 @@ class ProductsTable extends Component {
         this.setState({selectedProduct: product}); // Set the selectedProduct to the product that was clicked
     };
 
-    showModal = (product: any) => { // Open the modal with info about the product that was clicked
+    showModal = (product: any, type: any) => { // Open the modal with info about the product that was clicked
         console.log('Edit clicked on ' + product.name);  // DEBUG
         //For population of the form, get the vendors, categories and shelves
         this.getVendors();
         this.getCategories();
         this.getShelves();
         this.setState({modalProduct: product}); // Set the modalProduct to the product that was clicked
+        this.setState({modalType: type}); // Set the modalType to new or edit product
         this.setState({modalIsOpen: true}); // Open the modal
     }
 
@@ -119,7 +123,7 @@ class ProductsTable extends Component {
             console.log(error); // DEBUG: Log the error to the console
         });
 
-        this.setState({modalIsOpen: false, modalProduct: null}); // Close the modal
+        this.setState({modalIsOpen: false, modalProduct: null, modalType: null}); // Close the modal
     }
 
     handleInputChange = (field: string, value: any) => {
@@ -135,7 +139,18 @@ class ProductsTable extends Component {
         const { products, selectedProduct } = this.state;
         return ( // "Normal HTML" to be rendered
             <IonContent className="ion-padding">  { /* Only one element can be returned, so we wrap everything in a IonContent. This IonContent holds the table */ }
-
+                <IonFab 
+                    slot="fixed" 
+                    vertical="top" 
+                    horizontal="end" 
+                    edge={true}
+                    style={{zIndex: "999"}} 
+                    onClick= {() => this.showModal({id: null, name: "", category_id: null, size: null, minAmount: null, vendor_id: null, item_no_byvendor: null, shelf_id: null, shelf_order: null}, "add")} // When the fab is clicked, open the modal with an empty product
+                    > 
+                    <IonFabButton>
+                        <IonIcon icon={add}></IonIcon>
+                    </IonFabButton>
+                </IonFab>
                 <IonActionSheet
                     isOpen = {selectedProduct !== null} // If the user did not click on a product, do not show action sheet
                     header={selectedProduct?.name ? selectedProduct.name : "Error - This should not happen!"} // If selectedProduct is not null, set header to nane of product. Otherwise display error
@@ -143,7 +158,7 @@ class ProductsTable extends Component {
                     buttons={[
                         {
                             text: 'Edit',
-                            handler: () => this.showModal(selectedProduct)
+                            handler: () => this.showModal(selectedProduct, "edit")
                         },
                         {
                             text: 'Delete',
@@ -174,7 +189,9 @@ class ProductsTable extends Component {
                             <form onSubmit={this.handleModalSubmit}>
                                 <IonList>
                                     <IonListHeader lines="full">
-                                        <IonLabel>{this.state.modalProduct?.name}</IonLabel>
+                                        <IonLabel>
+                                            {this.state.modalType === "add" ? "New Product" : "Edit Product"}
+                                        </IonLabel>
                                     </IonListHeader>
                                     <IonItem>
                                         <IonLabel slot="start">Name</IonLabel>
@@ -191,6 +208,7 @@ class ProductsTable extends Component {
                                     <IonItem>
                                         <IonLabel slot="start">Category</IonLabel>
                                         <IonSelect 
+                                            id="category"
                                             aria-label="category" 
                                             interface="action-sheet" 
                                             slot="end" 
