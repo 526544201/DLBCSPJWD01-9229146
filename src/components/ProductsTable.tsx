@@ -71,10 +71,65 @@ class ProductsTable extends Component {
 
     handleModalSubmit = (event: any) => { 
         event.preventDefault(); 
-        // TODO: Add save functionality!
-        console.log('Submit clicked on ' + this.state.modalProduct.name); // DEBUG
+
+        const name = this.state.modalProduct.name;
+        const categoryId = this.state.modalProduct.category_id;
+        const size = this.state.modalProduct.size;
+        const minAmount = this.state.modalProduct.minAmount;
+        const vendorId = this.state.modalProduct.vendor_id;
+        const itemNo = this.state.modalProduct.item_no_byvendor;
+        const shelfId = this.state.modalProduct.shelf_id;
+        const shelfOrder = this.state.modalProduct.shelf_order;
+
+        let payload;
+
+        // Check if the product is new or should be updated
+        if (this.state.modalProduct.id === null) { // If the product is new
+            payload = {
+                name: name,
+                categoryId: categoryId,
+                size: size,
+                minAmount: minAmount,
+                vendorId: vendorId,
+                itemNo: itemNo,
+                shelfId: shelfId,
+                shelfOrder: shelfOrder
+            }
+        } else { // If the product should be updated
+            payload = {
+                id: this.state.modalProduct.id,
+                name: name,
+                categoryId: categoryId,
+                size: size,
+                minAmount: minAmount,
+                vendorId: vendorId,
+                itemNo: itemNo,
+                shelfId: shelfId,
+                shelfOrder: shelfOrder
+            }
+        }
+
+        // Send the payload to the API
+        axios.post(environment.apiUrl + '/updateProduct.php', payload)
+        .then(response => {
+            console.log(response); // DEBUG: Log the response to the console
+            this.getProducts(); // Update the products
+        })
+        .catch(error => { // Catch any errors
+            console.log(error); // DEBUG: Log the error to the console
+        });
+
         this.setState({modalIsOpen: false, modalProduct: null}); // Close the modal
     }
+
+    handleInputChange = (field: string, value: any) => {
+        this.setState((prevState: any) => ({
+            modalProduct: {
+                ...prevState.modalProduct,
+                [field]: value
+                },
+            }));
+        };
 
     render() { // Render the component
         const { products, selectedProduct } = this.state;
@@ -123,11 +178,25 @@ class ProductsTable extends Component {
                                     </IonListHeader>
                                     <IonItem>
                                         <IonLabel slot="start">Name</IonLabel>
-                                        <IonInput id="name" aria-label="Name" slot="end" className="ion-text-right" value={this.state.modalProduct?.name} required></IonInput>
+                                        <IonInput 
+                                            id="name" 
+                                            aria-label="Name" 
+                                            slot="end" 
+                                            className="ion-text-right" 
+                                            value={this.state.modalProduct?.name} 
+                                            onInput={(e) => this.handleInputChange('name', (e.target as HTMLInputElement).value)}
+                                            required
+                                            ></IonInput>
                                     </IonItem>
                                     <IonItem>
                                         <IonLabel slot="start">Category</IonLabel>
-                                        <IonSelect aria-label="Category" interface="action-sheet" slot="end" value={this.state.modalProduct?.category_id} >
+                                        <IonSelect 
+                                            aria-label="category" 
+                                            interface="action-sheet" 
+                                            slot="end" 
+                                            value={this.state.modalProduct?.category_id} 
+                                            onIonChange = {(e) => this.handleInputChange('category_id', e.detail.value)}
+                                            >
                                             {this.state.categories.map((category: any) => (
                                                 <IonSelectOption key={category.id} value={category.id}>{category.name}</IonSelectOption>
                                             ))}
@@ -135,7 +204,17 @@ class ProductsTable extends Component {
                                     </IonItem>
                                     <IonItem>
                                         <IonLabel slot="start">Order Size</IonLabel>
-                                        <IonInput id="size" aria-label="Order Size" type="number" slot="end" className="ion-text-right" value={this.state.modalProduct?.size} min='1' required></IonInput>
+                                        <IonInput 
+                                            id="size" 
+                                            aria-label="Order Size" 
+                                            type="number" 
+                                            slot="end" 
+                                            className="ion-text-right" 
+                                            value={this.state.modalProduct?.size} 
+                                            min='1' 
+                                            onInput={(e) => this.handleInputChange('size', (e.target as HTMLInputElement).value)}
+                                            required
+                                            ></IonInput>
                                     </IonItem>
                                     <IonItem>
                                         <IonLabel slot="start">Min Amount</IonLabel>
@@ -143,7 +222,13 @@ class ProductsTable extends Component {
                                     </IonItem>
                                     <IonItem>
                                         <IonLabel slot="start">Vendor</IonLabel>
-                                        <IonSelect aria-label="Vendor" interface="action-sheet" slot="end" value={this.state.modalProduct?.vendor_id} >
+                                        <IonSelect 
+                                            aria-label="vendor"
+                                            interface="action-sheet" 
+                                            slot="end" 
+                                            value={this.state.modalProduct?.vendor_id} 
+                                            onIonChange = {(e) => this.handleInputChange('vendor_id', e.detail.value)}
+                                            >
                                             {this.state.vendors.map((vendor: any) => (
                                                 <IonSelectOption key={vendor.id} value={vendor.id}>{vendor.name}</IonSelectOption>
                                             ))}
@@ -151,15 +236,45 @@ class ProductsTable extends Component {
                                     </IonItem>
                                     <IonItem>
                                         <IonLabel slot="start">ItemNo.</IonLabel>
-                                        <IonInput id="itemNo" aria-label="Item Number" type="number" slot="end" className="ion-text-right" value={this.state.modalProduct?.item_no_byvendor} min='1' required></IonInput>
+                                        <IonInput 
+                                            id="itemNo" 
+                                            aria-label="Item Number" 
+                                            type="number" 
+                                            slot="end" 
+                                            className="ion-text-right" 
+                                            value={this.state.modalProduct?.item_no_byvendor} 
+                                            min='1' 
+                                            onInput={(e) => this.handleInputChange('item_no_byvendor', (e.target as HTMLInputElement).value)}
+                                            required
+                                            ></IonInput>
                                     </IonItem>
                                     <IonItem>
                                         <IonLabel slot="start">Shelf</IonLabel>
-                                        <IonSelect aria-label="Shelf" interface="action-sheet" slot="end" value={this.state.modalProduct?.shelf_id} >
+                                        <IonSelect 
+                                            aria-label="shelf" 
+                                            interface="action-sheet" 
+                                            slot="end" 
+                                            value={this.state.modalProduct?.shelf_id} 
+                                            onIonChange = {(e) => this.handleInputChange('shelf_id', e.detail.value)}
+                                            >
                                             {this.state.shelves.map((shelf: any) => (
                                                 <IonSelectOption key={shelf.id} value={shelf.id}>{shelf.name}</IonSelectOption>
                                             ))}
                                         </IonSelect>
+                                    </IonItem>
+                                    <IonItem>
+                                        <IonLabel slot="start">Place in shelf</IonLabel>
+                                        <IonInput 
+                                            id="shelf_order" 
+                                            aria-label="shelfPlace" 
+                                            type="number" 
+                                            slot="end" 
+                                            className="ion-text-right" 
+                                            value={this.state.modalProduct?.shelf_order} 
+                                            min='1'
+                                            onInput={(e) => this.handleInputChange('shelf_order', (e.target as HTMLInputElement).value)}                                            
+                                            required
+                                            ></IonInput>
                                     </IonItem>
                                 </IonList>
                                 <IonFooter>
