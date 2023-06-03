@@ -139,7 +139,6 @@ class ProductsTable extends Component {
             this.getProducts(); // Update the products
         })
         .catch(error => { // Catch any errors
-            console.log(error);
             this.setToast(true, error.message + ": " + error.response.data.message, 10000);
         });
 
@@ -344,6 +343,12 @@ class ProductsTable extends Component {
                         </IonModal>
         
                 <table className="table">
+                    <colgroup>
+                        <col style={{ width: '60%' }} />
+                        <col style={{ width: '20%' }} />
+                        <col style={{ width: '10%' }} />
+                        <col style={{ width: '10%' }} />
+                    </colgroup>                    
                     <thead>
                         <tr>
                             <th>Name</th>
@@ -360,7 +365,7 @@ class ProductsTable extends Component {
                                 onClick={() => this.openActionSheet(product)}
                                 > 
                                     <td>{product.name}</td>
-                                    <td>{product.vendor_id}</td>
+                                    <td>{product.vendor_name}</td>
                                     <td>{product.stock}</td>
                                     <td>{product.minAmount}</td>
                             </tr>

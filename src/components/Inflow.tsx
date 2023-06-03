@@ -106,6 +106,11 @@ class Inflow extends Component {
                         <div className="ion-padding" slot="content">
                             <h2>{vendorName}</h2>
                             <table className="table">
+                                <colgroup>
+                                    <col style={{ width: '50%' }} />
+                                    <col style={{ width: '25%' }} />
+                                    <col style={{ width: '25%' }} />
+                                </colgroup>
                                 <thead>
                                     <tr>
                                         <th>Name</th>
