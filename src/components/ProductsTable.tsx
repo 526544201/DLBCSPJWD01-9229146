@@ -218,7 +218,17 @@ class ProductsTable extends Component {
                                     </IonItem>
                                     <IonItem>
                                         <IonLabel slot="start">Min Amount</IonLabel>
-                                        <IonInput id="minAmount" aria-label="Min Amount" type="number" slot="end" className="ion-text-right" value={this.state.modalProduct?.minAmount} min='1' required></IonInput>
+                                        <IonInput 
+                                            id="minAmount" 
+                                            aria-label="Min Amount" 
+                                            type="number" 
+                                            slot="end" 
+                                            className="ion-text-right" 
+                                            value={this.state.modalProduct?.minAmount} 
+                                            min='1' 
+                                            onInput={(e) => this.handleInputChange('minAmount', (e.target as HTMLInputElement).value)}
+                                            required
+                                            ></IonInput>
                                     </IonItem>
                                     <IonItem>
                                         <IonLabel slot="start">Vendor</IonLabel>
