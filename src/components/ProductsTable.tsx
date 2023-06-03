@@ -1,11 +1,10 @@
 import React, { Component } from 'react';
 import axios from 'axios';
 import environment from '../environment';
-import { IonActionSheet, IonButton, IonButtons, IonContent, IonHeader, IonModal, IonTitle, IonToolbar, IonItem, IonLabel, IonList, IonListHeader, IonInput, IonFooter, IonSelect, IonSelectOption, IonFab, IonFabButton, IonIcon } from '@ionic/react';
+import { IonActionSheet, IonButton, IonButtons, IonContent, IonHeader, IonModal, IonTitle, IonToolbar, IonItem, IonLabel, IonList, IonListHeader, IonInput, IonFooter, IonSelect, IonSelectOption, IonFab, IonFabButton, IonIcon, IonToast } from '@ionic/react';
 
 import './Tables.css';
 import { add } from 'ionicons/icons';
-import { Z_ASCII } from 'zlib';
 
 class ProductsTable extends Component {
     state = { // Holds data in the component
@@ -16,41 +15,49 @@ class ProductsTable extends Component {
         selectedProduct: null as any,
         modalProduct: null as any,
         modalType: null as any,
-        modalIsOpen: false
+        modalIsOpen: false,
+        toastIsOpen: false,
+        toastDuration: 0,
+        toastMessage: ""
     }
 
     getProducts() {
         axios.get(environment.apiUrl + '/getProducts.php') // Get the products from the API via http request
         .then(response => {
-            console.log(response); // DEBUG: Log the response to the console 
             this.setState({ products: response.data }); // Set the state of the products array to the response data
         })
         .catch(error => { // Catch any errors
-            console.log(error); // DEBUG: Log the error to the console
-        });
+            this.setToast(true, error.message + " " + error.response.data.message, 10000);
+        })
     }
 
     getVendors() {
         axios.get(environment.apiUrl + '/getVendors.php') // Get the products from the API via http request
         .then(response => {
-            console.log(response); // DEBUG: Log the response to the console 
             this.setState({ vendors: response.data }); // Set the state of the products array to the response data
+        })
+        .catch(error => { // Catch any errors
+            this.setToast(true, error.message + " " + error.response.data.message, 10000);
         })
     }
 
     getCategories() {
         axios.get(environment.apiUrl + '/getCategories.php') // Get the products from the API via http request
         .then(response => {
-            console.log(response); // DEBUG: Log the response to the console 
             this.setState({ categories: response.data }); // Set the state of the products array to the response data
+        })
+        .catch(error => { // Catch any errors
+            this.setToast(true, error.message + " " + error.response.data.message, 10000);
         })
     }
 
     getShelves() {
         axios.get(environment.apiUrl + '/getShelves.php') // Get the products from the API via http request
         .then(response => {
-            console.log(response); // DEBUG: Log the response to the console 
             this.setState({ shelves: response.data }); // Set the state of the products array to the response data
+        })
+        .catch(error => { // Catch any errors
+            this.setToast(true, error.message + " " + error.response.data.message, 10000);
         })
     }
 
@@ -66,11 +73,11 @@ class ProductsTable extends Component {
         console.log('Delete clicked on ' + product.name); // DEBUG
         axios.post(environment.apiUrl + '/deleteProduct.php', {id: product.id}) // Send the id of the product to the API via http request
         .then(response => {
-            console.log(response); // DEBUG: Log the response to the console
+            this.setToast(true, "Product successfully deleted", 5000);
             this.getProducts(); // Update the products
         })
         .catch(error => { // Catch any errors
-            console.log(error); // DEBUG: Log the error to the console
+            this.setToast(true, error.message + " " + error.response.data.message, 10000);
         });
     }
 
@@ -128,11 +135,12 @@ class ProductsTable extends Component {
         // Send the payload to the API
         axios.post(environment.apiUrl + '/updateProduct.php', payload)
         .then(response => {
-            console.log(response); // DEBUG: Log the response to the console
+            this.setToast(true, "Product successfully updated", 5000);
             this.getProducts(); // Update the products
         })
         .catch(error => { // Catch any errors
-            console.log(error); // DEBUG: Log the error to the console
+            console.log(error);
+            this.setToast(true, error.message + ": " + error.response.data.message, 10000);
         });
 
         this.setState({modalIsOpen: false, modalProduct: null, modalType: null}); // Close the modal
@@ -146,6 +154,11 @@ class ProductsTable extends Component {
                 },
             }));
         };
+
+    setToast = (isOpen: boolean, message?: string, duration?: number) => {
+        this.setState({ toastIsOpen: isOpen, toastMessage: message, toastDuration: duration });
+    }
+
 
     render() { // Render the component
         const { products, selectedProduct } = this.state;
@@ -354,6 +367,13 @@ class ProductsTable extends Component {
                         ))}
                     </tbody>
                 </table>
+
+                <IonToast
+                    isOpen={this.state.toastIsOpen}
+                    message={this.state.toastMessage}
+                    onDidDismiss={() => this.setToast(false)}
+                    duration={this.state.toastDuration}
+                />
             </IonContent>
         )
     }

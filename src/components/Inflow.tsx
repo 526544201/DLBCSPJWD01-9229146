@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import axios from 'axios';
 import environment from '../environment';
-import { IonButton, IonContent, IonInput } from '@ionic/react';
+import { IonButton, IonContent, IonInput, IonToast } from '@ionic/react';
 import "./Tables.css";
 
 // TODO: MAYBE: Inflow and Outflow could be combined into one component, with a prop to determine which one it is
@@ -10,7 +10,10 @@ class Inflow extends Component {
     state = { // Holds data in the component
         products: [] , // Holds the products from the db
         changedProducts: [], // Holds the products where user changes the stock
-        requestId: ''
+        requestId: '',
+        toastIsOpen: false,
+        toastMessage: "",
+        toastDuration: 0
     }
 
     componentDidMount() { // Lifecycle method - When the component is mounted (on the screen)
@@ -58,7 +61,6 @@ class Inflow extends Component {
         const quantity = event.target.value; // Get the value of the input
         changedProducts.push({productId, quantity}); // Push the product id and quantity to the changedProducts array
         this.setState({changedProducts}); // Set the state of the changedProducts array to the new array
-        console.log(this.state.changedProducts); // DEBUG
     }
 
     handleSubmit = (event: any) => {
@@ -69,7 +71,7 @@ class Inflow extends Component {
                 console.log(response); // DEBUG: Log the response to the console
             })
             .catch(error => { // Catch any errors
-                console.log(error); // DEBUG: Log the error to the console
+                this.setToast(true, error.message + " " + error.response.data.message, 10000);
             });
     }
 
@@ -84,6 +86,10 @@ class Inflow extends Component {
 
         console.log(payload); // DEBUG
         return payload;
+    }
+
+    setToast(isOpen: boolean, message?: string, duration?: number) {
+        this.setState({ toastIsOpen: isOpen, toastMessage: message, toastDuration: duration });
     }
 
     render() { // Render the component
@@ -129,6 +135,12 @@ class Inflow extends Component {
                     ))}   
                 <IonButton type="submit">Submit</IonButton>
                 </form>
+                <IonToast
+                    isOpen={this.state.toastIsOpen}
+                    onDidDismiss={() => this.setToast(false)}
+                    message={this.state.toastMessage}
+                    duration={this.state.toastDuration}
+                />
             </div>
         
         )

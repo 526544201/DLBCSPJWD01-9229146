@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import axios from 'axios';
 import environment from '../environment';
-import { IonButton, IonContent, IonInput } from '@ionic/react';
+import { IonButton, IonContent, IonInput, IonToast } from '@ionic/react';
 import "./Tables.css";
 
 // TODO: MAYBE: Inflow and Outflow could be combined into one component, with a prop to determine which one it is
@@ -10,23 +10,24 @@ class Outflow extends Component {
     state = { // Holds data in the component
         products: [],
         changedProducts: [],
-        requestId: ''
+        requestId: '',
+        toastIsOpen: false,
+        toastMessage: "",
+        toastDuration: 0
     }
 
     componentDidMount() { // Lifecycle method - When the component is mounted (on the screen)
         axios.get(environment.apiUrl + '/getProducts.php') // Get the products from the API via http request
             .then(response => {
-                console.log(response); // DEBUG: Log the response to the console 
                 this.setState({ products: response.data }); // Set the state of the products array to the response data
             })
             .catch(error => { // Catch any errors
-                console.log(error); // DEBUG: Log the error to the console
-            });
+                this.setToast(true, error.message + " " + error.response.data.message, 10000);
+            })
     }
 
     componentDidUpdate(prevProps: any, prevState: any) { // Lifecycle method - When the component is updated
         if (prevState.changedProducts.length !== this.state.changedProducts.length) { // If the changedProducts array has changed
-            console.log('changedProducts changed'); // DEBUG
             this.setState({requestId: this.createRequestId()}); // Create a new request id
         }
     }
@@ -67,10 +68,10 @@ class Outflow extends Component {
         const payload = this.createPayload();
         axios.post(environment.apiUrl + '/bookStockchange.php', payload ) // Post the payload to the API via http request
             .then(response => {
-                console.log(response); // DEBUG: Log the response to the console
+                this.setToast(true, "Successfully booked", 3000);
             })
             .catch(error => { // Catch any errors
-                console.log(error); // DEBUG: Log the error to the console
+                this.setToast(true, error.message + ": " + error.response.data.message, 10000);
             });
     }
 
@@ -85,6 +86,10 @@ class Outflow extends Component {
 
         console.log(payload); // DEBUG
         return payload;
+    }
+
+    setToast = (isOpen: boolean, message?: string, duration?: number) => {
+        this.setState({ toastIsOpen: isOpen, toastMessage: message, toastDuration: duration });
     }
 
     render() { // Render the component
@@ -129,6 +134,13 @@ class Outflow extends Component {
                     ))}   
                 <IonButton type="submit">Submit</IonButton>
                 </form>
+
+                <IonToast
+                    isOpen={this.state.toastIsOpen}
+                    message={this.state.toastMessage}
+                    onDidDismiss={() => this.setToast(false)}
+                    duration={this.state.toastDuration}
+                />
             </div>
         
         )

@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import axios from 'axios';
 import environment from '../environment';
-import { IonAccordion, IonAccordionGroup, IonContent, IonItem, IonLabel } from '@ionic/react';
+import { IonAccordion, IonAccordionGroup, IonContent, IonItem, IonLabel, IonToast } from '@ionic/react';
 import FillStockHistoryAccordion from './FillStockHistoryAccordion';
 
 interface changeHistoryProps {
@@ -11,6 +11,9 @@ interface changeHistoryProps {
 class ChangeHistory extends Component<changeHistoryProps> {
     state = { // Holds data in the component
         stocks: [],
+        toastIsOpen: false,
+        toastMessage: "",
+        toastDuration: 0
     }
 
     componentDidMount() { // Lifecycle method - When the component is mounted (on the screen)
@@ -18,14 +21,17 @@ class ChangeHistory extends Component<changeHistoryProps> {
             params: {
                 type: this.props.type
             }
-        }) // Get the stocks from the API via http request ---- TODO: Add type to POST
+        }) // Get the stocks from the API via http request
             .then(response => {
-                console.log(response); // DEBUG: Log the response to the console 
                 this.setState({ stocks: response.data }); // Set the state of the stocks array to the response data
             })
             .catch(error => { // Catch any errors
-                console.log(error); // DEBUG: Log the error to the console
+                this.setToast(true, error.message + ": " + error.response.data.message, 10000)
             });
+    }
+
+    setToast(isOpen: boolean, message?: string, duration?: number) {
+        this.setState({ toastIsOpen: isOpen, toastMessage: message, toastDuration: duration });
     }
 
     render() { // Render the component
@@ -43,6 +49,12 @@ class ChangeHistory extends Component<changeHistoryProps> {
                         </IonAccordion>
                     ))}
                 </ IonAccordionGroup>
+                <IonToast
+                    isOpen={this.state.toastIsOpen}
+                    onDidDismiss={() => this.setToast(false)}
+                    message={this.state.toastMessage}
+                    duration={this.state.toastDuration}
+                />
             </IonContent>
         )
     }

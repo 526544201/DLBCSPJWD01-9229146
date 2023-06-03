@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import axios from 'axios';
 import environment from '../environment';
-import { IonAccordion, IonAccordionGroup, IonContent, IonItem, IonLabel } from '@ionic/react';
+import { IonAccordion, IonAccordionGroup, IonContent, IonItem, IonLabel, IonToast } from '@ionic/react';
 import "./Tables.css";
 
 interface FillAccordionProps {
@@ -13,6 +13,9 @@ interface FillAccordionProps {
 class FillStockHistoryAccordion extends Component<FillAccordionProps>{
     state = { // Holds data in the component
         stockChanges: [],
+        toastIsOpen: false,
+        toastMessage: "",
+        toastDuration: 0
     }
 
     componentDidMount() { // Lifecycle method - When the component is mounted (on the screen)
@@ -22,36 +25,47 @@ class FillStockHistoryAccordion extends Component<FillAccordionProps>{
                 type: this.props.type 
             }}) 
             .then(response => {
-                console.log(response); // DEBUG: Log the response to the console 
                 this.setState({ stockChanges: response.data }); // Set the state of the stocks array to the response data
             })
             .catch(error => { // Catch any errors
-                console.log(error); // DEBUG: Log the error to the console
+                this.setToast(true, error.message + ": " + error.response.data.message, 10000);
             });
+    }
+
+    setToast(isOpen: boolean, message?: string, duration?: number) {
+        this.setState({ toastIsOpen: isOpen, toastMessage: message, toastDuration: duration });
     }
 
     render() { // Render the component
         return ( // "Normal HTML" to be rendered
-                <table className="table" >
-                    <thead>
-                        <tr>
-                            <th>Product</th>
-                            <th>Old Stock</th>
-                            <th>Change</th>
-                            <th>New Stock</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        {this.state.stockChanges.length > 0 && this.state.stockChanges.map((stockChange: any) => (
-                            <tr key={`change${stockChange.change_id}`}>
-                                <td>{stockChange.name}</td>
-                                <td>{stockChange.old_Stock}</td>
-                                <td>{stockChange.quantity}</td>
-                                <td>{stockChange.new_Stock}</td>
+                <div>
+                    <table className="table" >
+                        <thead>
+                            <tr>
+                                <th>Product</th>
+                                <th>Old Stock</th>
+                                <th>Change</th>
+                                <th>New Stock</th>
                             </tr>
-                        ))}
-                    </tbody>
-                </table>
+                        </thead>
+                        <tbody>
+                            {this.state.stockChanges.length > 0 && this.state.stockChanges.map((stockChange: any) => (
+                                <tr key={`change${stockChange.change_id}`}>
+                                    <td>{stockChange.name}</td>
+                                    <td>{stockChange.old_Stock}</td>
+                                    <td>{stockChange.quantity}</td>
+                                    <td>{stockChange.new_Stock}</td>
+                                </tr>
+                            ))}
+                        </tbody>
+                    </table>
+                    <IonToast
+                        isOpen={this.state.toastIsOpen}
+                        onDidDismiss={() => this.setToast(false)}
+                        message={this.state.toastMessage}
+                        duration={this.state.toastDuration}
+                    />
+            </div>
         )
     }
 }

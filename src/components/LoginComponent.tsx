@@ -1,12 +1,15 @@
 import React, { Component } from 'react';
 import axios from 'axios';
 import environment from '../environment';
-import { IonButton, IonContent, IonInput } from '@ionic/react';
+import { IonButton, IonContent, IonInput, IonToast } from '@ionic/react';
 
 class LoginComponent extends Component {
     state = { // Holds data in the component
         email: '',
-        password: ''
+        password: '',
+        toastIsOpen: false,
+        toastMessage: "",
+        toastDuration: 0
     }
 
     handleEmailChange = (event: any) => {
@@ -34,9 +37,13 @@ class LoginComponent extends Component {
             window.location.href = '/Page/Products';
         })
         .catch(error => {
-            console.log(error);
+            this.setToast(true, error.message + ": " + error.response.data.message, 10000);
         });
     }  
+
+    setToast = (isOpen: boolean, message?: string, duration?: number) => {
+        this.setState({ toastIsOpen: isOpen, toastMessage: message, toastDuration: duration });
+    }
 
     render() { // Render the component
         return ( // "Normal HTML" to be rendered
@@ -58,6 +65,12 @@ class LoginComponent extends Component {
                     />
                     <IonButton type="submit">Log In</IonButton>
                 </form>
+                <IonToast
+                    isOpen={this.state.toastIsOpen}
+                    message={this.state.toastMessage}
+                    onDidDismiss={() => this.setToast(false)}
+                    duration={this.state.toastDuration}
+                />
             </IonContent>
         )
     }

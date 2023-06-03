@@ -37,7 +37,7 @@
     } else {
         http_response_code(400);
         echo json_encode(array(
-            "error" => "No name provided"
+            "message" => "No name provided"
         ));
         die();
     }
@@ -47,7 +47,7 @@
     } else {
         http_response_code(400);
         echo json_encode(array(
-            "error" => "No categoryId provided"
+            "message" => "No categoryId provided"
         ));
         die();
     }
@@ -57,7 +57,7 @@
     } else {
         http_response_code(400);
         echo json_encode(array(
-            "error" => "No size provided"
+            "message" => "No size provided"
         ));
         die();
     }
@@ -67,7 +67,7 @@
     } else {
         http_response_code(400);
         echo json_encode(array(
-            "error" => "No minAmount provided"
+            "message" => "No minAmount provided"
         ));
         die();
     }
@@ -77,7 +77,7 @@
     } else {
         http_response_code(400);
         echo json_encode(array(
-            "error" => "No vendorId provided"
+            "message" => "No vendorId provided"
         ));
         die();
     }
@@ -87,7 +87,7 @@
     } else {
         http_response_code(400);
         echo json_encode(array(
-            "error" => "No itemNo provided"
+            "message" => "No itemNo provided"
         ));
         die();
     }
@@ -97,7 +97,7 @@
     } else {
         http_response_code(400);
         echo json_encode(array(
-            "error" => "No shelfId provided"
+            "message" => "No shelfId provided"
         ));
         die();
     } 
@@ -107,7 +107,7 @@
     } else {
         http_response_code(400);
         echo json_encode(array(
-            "error" => "No shelfOrder provided"
+            "message" => "No shelfOrder provided"
         ));
         die();
     }
@@ -136,7 +136,7 @@
     // Get the result
     $result = mysqli_stmt_get_result($stmt);
 
-    // TODO: Send the response
+    // Send the response
     if(mysqli_affected_rows($conn) == 0) {
         http_response_code(500);
         echo json_encode(array(

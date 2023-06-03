@@ -1,22 +1,24 @@
 import React, { Component } from 'react';
 import axios from 'axios';
 import environment from '../environment';
-import { IonButton, IonContent, IonInput } from '@ionic/react';
+import { IonButton, IonContent, IonInput, IonToast } from '@ionic/react';
 import "./Tables.css";
 
 class Inventory extends Component {
     state = { // Holds data in the component
-        products: [] ,
+        products: [],
+        toastIsOpen: false,
+        toastMessage: "",
+        toastDuration: 0
     }
 
     componentDidMount() { // Lifecycle method - When the component is mounted (on the screen)
         axios.get(environment.apiUrl + '/getProducts.php') // Get the products from the API via http request
             .then(response => {
-                console.log(response); // DEBUG: Log the response to the console 
                 this.setState({ products: response.data }); // Set the state of the products array to the response data
             })
             .catch(error => { // Catch any errors
-                console.log(error); // DEBUG: Log the error to the console
+                this.setToast(true, error.message + " " + error.response.data.message, 10000);
             });
     }
 
@@ -38,6 +40,10 @@ class Inventory extends Component {
 
     handleSubmit = (event: any) => {
         return;
+    }
+
+    setToast = (isOpen: boolean, message?: string, duration?: number) => {
+        this.setState({ toastIsOpen: isOpen, toastMessage: message, toastDuration: duration });
     }
 
     render() { // Render the component
@@ -83,6 +89,12 @@ class Inventory extends Component {
                     ))}   
                 <IonButton type="submit">Submit</IonButton>
                 </form>
+                <IonToast
+                    isOpen={this.state.toastIsOpen}
+                    message={this.state.toastMessage}
+                    onDidDismiss={() => this.setToast(false)}
+                    duration={this.state.toastDuration}
+                />
             </div>
         
         )

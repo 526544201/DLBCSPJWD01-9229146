@@ -3,7 +3,7 @@ import PropTypes from 'prop-types';
 import axios from 'axios';
 import environment from '../environment';
 import "./Tables.css";
-import { IonContent } from '@ionic/react';
+import { IonContent, IonToast } from '@ionic/react';
 
 interface OrderOverviewProps { // Create an interface for the props that are passed to this component - Otherwise TypeScript will complain
     vendorId: string 
@@ -12,7 +12,10 @@ interface OrderOverviewProps { // Create an interface for the props that are pas
 class OrderOverview extends Component<OrderOverviewProps> {
 
     state = { // Holds data in the component
-        products: []
+        products: [],
+        toastIsOpen: false,
+        toastMessage: "",
+        toastDuration: 0
     }
 
     componentDidMount() { // Lifecycle method - When the component is mounted (on the screen)
@@ -23,12 +26,15 @@ class OrderOverview extends Component<OrderOverviewProps> {
             }
         }) // Get the products from the API via http request
             .then(response => {
-                console.log(response); // DEBUG: Log the response to the console 
                 this.setState({ products: response.data }); // Set the state of the products array to the response data
             })
             .catch(error => { // Catch any errors
-                console.log(error); // DEBUG: Log the error to the console
-            });
+                this.setToast(true, error.message + ": " + error.response.data.message, 10000);
+            })
+    }
+
+    setToast(isOpen: boolean, message?: string, duration?: number) { // Set the toast message
+        this.setState({ toastIsOpen: isOpen, toastMessage: message, toastDuration: duration });
     }
 
     render() { // Render the component
@@ -58,6 +64,12 @@ class OrderOverview extends Component<OrderOverviewProps> {
                         ))}
                     </tbody>
                 </table>
+                <IonToast
+                    isOpen={this.state.toastIsOpen}
+                    onDidDismiss={() => this.setToast(false)}
+                    message={this.state.toastMessage}
+                    duration={this.state.toastDuration}
+                />
             </IonContent>
         )
     }

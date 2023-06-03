@@ -2,23 +2,25 @@ import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import axios from 'axios';
 import environment from '../environment';
-import { IonAccordion, IonAccordionGroup, IonContent, IonItem, IonLabel } from '@ionic/react';
+import { IonAccordion, IonAccordionGroup, IonContent, IonItem, IonLabel, IonToast } from '@ionic/react';
 import "./Tables.css";
 
 class OtherOrders extends Component {
 
     state = { // Holds data in the component
-        products: []
+        products: [],
+        toastIsOpen: false,
+        toastMessage: "",
+        toastDuration: 0
     }
 
     componentDidMount() { // Lifecycle method - When the component is mounted (on the screen)
         axios.get(environment.apiUrl + '/getProductsToOrderOther.php') // Get the products from the API via http request
             .then(response => {
-                console.log(response); // DEBUG: Log the response to the console 
                 this.setState({ products: response.data }); // Set the state of the products array to the response data
             })
             .catch(error => { // Catch any errors
-                console.log(error); // DEBUG: Log the error to the console
+                this.setToast(true, error.message + ": " + error.response.data.message, 10000);
             });
     }
 
@@ -32,6 +34,10 @@ class OtherOrders extends Component {
             return grouped;
         }, {});
         return groupedProducts;       
+    }
+
+    setToast(isOpen: boolean, message?: string, duration?: number) {
+        this.setState({ toastIsOpen: isOpen, toastMessage: message, toastDuration: duration });
     }
 
     render() { // Render the component
@@ -80,6 +86,12 @@ class OtherOrders extends Component {
                         </IonAccordion>
                     ))}
                 </IonAccordionGroup>
+                <IonToast
+                    isOpen={this.state.toastIsOpen}
+                    onDidDismiss={() => this.setToast(false)}
+                    message={this.state.toastMessage}
+                    duration={this.state.toastDuration}
+                />
             </IonContent>
         )
     }
