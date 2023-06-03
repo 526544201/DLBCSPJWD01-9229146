@@ -13,7 +13,11 @@ class Inventory extends Component {
     }
 
     componentDidMount() { // Lifecycle method - When the component is mounted (on the screen)
-        axios.get(environment.apiUrl + '/getProducts.php') // Get the products from the API via http request
+        axios.get(environment.apiUrl + '/getProducts.php', { 
+            params: {
+                orderby: 'shelf_order'
+            }
+        }) 
             .then(response => {
                 this.setState({ products: response.data }); // Set the state of the products array to the response data
             })

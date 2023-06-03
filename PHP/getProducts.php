@@ -14,11 +14,12 @@
 
     // TODO: Add authentication
 
-    // TODO: Get payload
-
-    // TODO: Validate payload
-
-    // TODO: Check for parameters
+    // Check for parameters
+    if (isset($_GET['orderby'])) {
+        $orderby = $_GET['orderby'];
+    } else {
+        $orderby = "name";
+    }
 
     // Database Connection
     require("util/connection.php");
@@ -28,7 +29,10 @@
                 FROM products
                 INNER JOIN vendors ON products.vendor_id = vendors.id
                 INNER JOIN categories ON products.category_id = categories.id
-                INNER JOIN shelves ON products.shelf_id = shelves.id";
+                INNER JOIN shelves ON products.shelf_id = shelves.id
+                WHERE products.active = 1
+                ORDER BY products.$orderby ASC";
+                
     $result = mysqli_query($conn, $query);
 
     // Check for errors

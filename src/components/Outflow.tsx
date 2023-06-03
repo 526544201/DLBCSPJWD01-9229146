@@ -83,8 +83,6 @@ class Outflow extends Component {
             requestId: this.state.requestId,
             data: changedProducts
         };
-
-        console.log(payload); // DEBUG
         return payload;
     }
 

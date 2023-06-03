@@ -17,19 +17,21 @@ class Inflow extends Component {
     }
 
     componentDidMount() { // Lifecycle method - When the component is mounted (on the screen)
-        axios.get(environment.apiUrl + '/getProducts.php') // Get the products from the API via http request
+        axios.get(environment.apiUrl + '/getProducts.php', { 
+            params: { 
+                orderby: 'item_no_byvendor'
+            }
+        })
             .then(response => {
-                console.log(response); // DEBUG: Log the response to the console 
                 this.setState({ products: response.data }); // Set the state of the products array to the response data
             })
             .catch(error => { // Catch any errors
-                console.log(error); // DEBUG: Log the error to the console
+                this.setToast(true, error.message + " " + error.response.data.message, 10000);
             });
     }
 
     componentDidUpdate(prevProps: any, prevState: any) { // Lifecycle method - When the component is updated
         if (prevState.changedProducts.length !== this.state.changedProducts.length) { // If the changedProducts array has changed
-            console.log('changedProducts changed'); // DEBUG
             this.setState({requestId: this.createRequestId()}); // Create a new request id
         }
     }
@@ -68,7 +70,7 @@ class Inflow extends Component {
         const payload = this.createPayload();
         axios.post(environment.apiUrl + '/bookStockchange.php', payload ) // Post the payload to the API via http request
             .then(response => {
-                console.log(response); // DEBUG: Log the response to the console
+                this.setToast(true, response.data.message, 10000);
             })
             .catch(error => { // Catch any errors
                 this.setToast(true, error.message + " " + error.response.data.message, 10000);
