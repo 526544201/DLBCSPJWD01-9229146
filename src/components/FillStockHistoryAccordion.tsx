@@ -32,6 +32,12 @@ class FillStockHistoryAccordion extends Component<FillAccordionProps>{
             });
     }
 
+    /**
+        Sets the state to control the toast component.
+        @param {boolean} isOpen - Indicates whether the toast should be displayed (true) or hidden (false).
+        @param {string} message - The message to be displayed in the toast. Optional, defaults to an empty string if not provided.
+        @param {number} duration - The duration in milliseconds for which the toast should be visible. Optional, defaults to 0 if not provided.
+    */
     setToast(isOpen: boolean, message?: string, duration?: number) {
         this.setState({ toastIsOpen: isOpen, toastMessage: message, toastDuration: duration });
     }

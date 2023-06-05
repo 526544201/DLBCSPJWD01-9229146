@@ -35,7 +35,10 @@ class Inflow extends Component {
             this.setState({requestId: this.createRequestId()}); // Create a new request id
         }
     }
-
+    /**
+        * Generates a random request ID. Gets called when the user changes the stock of a product.
+        * @returns {string} The randomly generated request ID.
+    */
     createRequestId() {
         const characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
         let result = '';
@@ -46,6 +49,11 @@ class Inflow extends Component {
         return result;
     }
 
+    /**
+         * Groups products by the vendor.
+         * @param {Array} products - The array of products to be grouped.
+         * @returns {Object} An object containing grouped products.
+     */
     groupByVendor(products: any) {
         const groupedProducts = products.reduce((grouped: any, product: any) => { // Iterate through the products array, accumulating the products into groups based on the callback function
             const vendor = product.vendor_name; // Get the vendor of the current product
@@ -58,6 +66,11 @@ class Inflow extends Component {
         return groupedProducts;       
     }
 
+    /**
+         * Handles the input change event and updates the state changedProducts with an array of key-value pairs of the changed product ids and the quantities.
+         * @param {Event} event - The event that triggered the function. Target is the input field the user changed.
+         * @param {number} productId - The ID of the product being changed.
+     */
     handleInputChange = (event: any, productId: number) => {
         const changedProducts: {productId: number, quantity: number}[] = [...this.state.changedProducts]; // Typescript doesn't like changedProducts.push({productId, quantity});
         const quantity = event.target.value; // Get the value of the input
@@ -65,6 +78,11 @@ class Inflow extends Component {
         this.setState({changedProducts}); // Set the state of the changedProducts array to the new array
     }
 
+    /**
+         * Handles the form submission event, sends a POST request to the API, and displays a toast message.
+         * 
+         * @param {Event} event - The event that triggered the function. Target is the form that was submitted.
+    */
     handleSubmit = (event: any) => {
         event.preventDefault();
         const payload = this.createPayload();
@@ -77,19 +95,27 @@ class Inflow extends Component {
             });
     }
 
+    /**
+         * Creates a payload object with the changed products, the request ID, and the type of stockchange.
+         * 
+         * @returns {Object} The payload object.
+     */
     createPayload() {
         const changedProducts: {productId: number, quantity: number}[] = this.state.changedProducts;
         const payload = {
-            timestamp: new Date().toISOString(),
             type: 'Inflow',
             requestId: this.state.requestId,
             data: changedProducts
         };
-
-        console.log(payload); // DEBUG
         return payload;
     }
 
+    /**
+        Sets the state to control the toast component.
+        @param {boolean} isOpen - Indicates whether the toast should be displayed (true) or hidden (false).
+        @param {string} message - The message to be displayed in the toast. Optional, defaults to an empty string if not provided.
+        @param {number} duration - The duration in milliseconds for which the toast should be visible. Optional, defaults to 0 if not provided.
+    */   
     setToast(isOpen: boolean, message?: string, duration?: number) {
         this.setState({ toastIsOpen: isOpen, toastMessage: message, toastDuration: duration });
     }

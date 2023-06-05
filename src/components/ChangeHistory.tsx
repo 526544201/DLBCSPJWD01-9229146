@@ -10,10 +10,10 @@ interface changeHistoryProps {
 
 class ChangeHistory extends Component<changeHistoryProps> {
     state = { // Holds data in the component
-        stocks: [],
-        toastIsOpen: false,
-        toastMessage: "",
-        toastDuration: 0
+        stocks: [], // Holds the list of stockchanges
+        toastIsOpen: false, // Tracks the visibility of the toast
+        toastMessage: "", // Holds the message to be displayed in the toast
+        toastDuration: 0 // Holds the duration for which the toast should be visible
     }
 
     componentDidMount() { // Lifecycle method - When the component is mounted (on the screen)
@@ -30,6 +30,12 @@ class ChangeHistory extends Component<changeHistoryProps> {
             });
     }
 
+    /**
+        Sets the state to control the toast component.
+        @param {boolean} isOpen - Indicates whether the toast should be displayed (true) or hidden (false).
+        @param {string} message - The message to be displayed in the toast. Optional, defaults to an empty string if not provided.
+        @param {number} duration - The duration in milliseconds for which the toast should be visible. Optional, defaults to 0 if not provided.
+    */
     setToast(isOpen: boolean, message?: string, duration?: number) {
         this.setState({ toastIsOpen: isOpen, toastMessage: message, toastDuration: duration });
     }
