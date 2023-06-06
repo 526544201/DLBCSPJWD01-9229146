@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import axios from 'axios';
 import environment from '../environment';
-import { IonButton, IonContent, IonInput, IonToast } from '@ionic/react';
+import { IonButton, IonCard, IonCardContent, IonCardHeader, IonCardSubtitle, IonContent, IonInput, IonToast } from '@ionic/react';
 import "./Tables.css";
 
 interface InflowProps { // Create an interface for the props that are passed to this component - Otherwise TypeScript will complain
@@ -188,10 +188,14 @@ class Inflow extends Component <InflowProps> {
 
                     if (filteredProducts.length === 0) return null; // If there are no products, don't display the table
 
+                    const vendorLogo = filteredProducts[0].vendor_logo; // Get the vendor banner of the first product in the array
                     return(
                     <div key={vendorName}>
-                        <div className="ion-padding" slot="content">
-                            <h2>{vendorName}</h2>
+                        <IonCard>
+                            <div className="bannerDiv">
+                                <IonCardHeader className="vendorHeader">{<img src={vendorLogo} className="middle-logo"/>}{vendorName}</IonCardHeader>
+                            </div>             
+                            <IonCardContent className="cardTable">
                             <table className="table">
                                 <colgroup>
                                     <col style={{ width: '50%' }} />
@@ -223,7 +227,8 @@ class Inflow extends Component <InflowProps> {
                                     ))}
                                 </tbody>
                             </table>
-                        </div>
+                            </IonCardContent>
+                        </IonCard>
                     </div>
                 )})}   
                 <IonButton type="submit">Submit</IonButton>

@@ -42,6 +42,14 @@
     height: 20px;
 }
 
+.middle-logo {
+    display: inline-block;
+    vertical-align: middle;
+    margin-right: 5px;
+    max-width: 100px;
+    height: 40px;
+}
+
 .vendor-field {
     white-space: nowrap;
     display: flex;
@@ -53,6 +61,20 @@
     width: 100%;
     height: 100%;
     
+}
+
+.vendorHeader {
+    display: flex;
+    justify-content: space-between;
+    font-weight: bold;
+    font-size: 2em;
+    color: azure;
+    align-items: center;
+    margin-bottom: 10px;
+}
+
+.cardTable {
+    color: azure;
 }
 
 @media (max-width: 768px) {
