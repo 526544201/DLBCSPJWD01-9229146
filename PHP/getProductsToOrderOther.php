@@ -22,7 +22,11 @@
     require("util/connection.php");
 
     // Prepare the statement
-    $stmt = mysqli_prepare($conn, "SELECT * FROM products WHERE vendor_id NOT IN (1, 2) AND stock < minAmount");
+    $stmt = mysqli_prepare($conn, " SELECT products.*, vendors.name AS vendor_name
+                                    FROM products
+                                    INNER JOIN vendors ON products.vendor_id = vendors.id 
+                                    WHERE vendor_id 
+                                    NOT IN (1, 2) AND stock < minAmount AND active = 1");
 
     // Execute the statement
     mysqli_stmt_execute($stmt);

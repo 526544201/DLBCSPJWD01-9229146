@@ -26,7 +26,7 @@ class OtherOrders extends Component {
 
     groupByVendor(products: any) {
         const groupedProducts = products.reduce((grouped: any, product: any) => { // Iterate through the products array, accumulating the products into groups based on the callback function
-            const vendor = product.vendor_id; // Get the vendor id of the current product
+            const vendor = product.vendor_name; // Get the vendor id of the current product
             if (!grouped[vendor]) { // If the vendor id doesn't exist in the groups object
                 grouped[vendor] = []; // Create a new array for the vendor id
             }
@@ -52,11 +52,11 @@ class OtherOrders extends Component {
         return ( // "Normal HTML" to be rendered
             <IonContent className="ion-padding">
                 <IonAccordionGroup>
-                    {Object.entries(groupedProducts).map(([vendorId, products]) => ( // Typescript shenanigans / Object.entries returns an array of key-value pairs. 
+                    {Object.entries(groupedProducts).map(([vendorName, products]) => ( // Typescript shenanigans / Object.entries returns an array of key-value pairs. 
                         // The key is the vendor id, and the value is the array of products. For each key-value pair, create an IonAccordion
-                        <IonAccordion key={vendorId}> 
+                        <IonAccordion key={vendorName}> 
                             <IonItem slot="header" color="light">
-                                <IonLabel>{vendorId}</IonLabel>
+                                <IonLabel>{vendorName}</IonLabel>
                             </IonItem>
                             <div className="ion-padding" slot="content">
                                 <table className="table">
