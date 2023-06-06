@@ -43,6 +43,9 @@ class FillStockHistoryAccordion extends Component<FillAccordionProps>{
     }
 
     render() { // Render the component
+
+        let index = 0;
+
         return ( // "Normal HTML" to be rendered
                 <div>
                     <table className="table" >
@@ -56,7 +59,7 @@ class FillStockHistoryAccordion extends Component<FillAccordionProps>{
                         </thead>
                         <tbody>
                             {this.state.stockChanges.length > 0 && this.state.stockChanges.map((stockChange: any) => (
-                                <tr key={`change${stockChange.change_id}`}>
+                                <tr key={index++}>
                                     <td>{stockChange.name}</td>
                                     <td>{stockChange.old_Stock}</td>
                                     <td>{stockChange.quantity}</td>
