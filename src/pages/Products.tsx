@@ -1,8 +1,14 @@
-import React from 'react';
-import { IonButtons, IonContent, IonHeader, IonMenuButton, IonPage, IonTitle, IonToolbar } from '@ionic/react';
+import React, { useState } from 'react';
+import { IonButtons, IonContent, IonHeader, IonMenuButton, IonPage, IonSearchbar, IonTitle, IonToolbar } from '@ionic/react';
 import ProductsTable from '../components/ProductsTable';
 
 const Products: React.FC = () => {
+    const [searchTerm, setSearchTerm] = useState('');
+
+    const handleInput = (event: any) => {
+        const term = event.target.value;
+        setSearchTerm(term);
+    };
 
     return (
         <IonPage>
@@ -13,6 +19,9 @@ const Products: React.FC = () => {
             </IonButtons>
             <IonTitle>Products</IonTitle>
             </IonToolbar>
+            <IonToolbar>
+                <IonSearchbar debounce={1000} onIonInput={handleInput}showClearButton="always" placeholder="Searchbar" ></IonSearchbar>
+            </IonToolbar>
         </IonHeader>
 
         <IonContent fullscreen>
@@ -21,7 +30,7 @@ const Products: React.FC = () => {
                 <IonTitle size="large">Products</IonTitle>
             </IonToolbar>
             </IonHeader>
-            <ProductsTable />
+            <ProductsTable searchTerm={searchTerm}/>
         </IonContent>
         </IonPage>
     );

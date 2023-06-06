@@ -6,7 +6,11 @@ import { IonActionSheet, IonButton, IonButtons, IonContent, IonHeader, IonModal,
 import './Tables.css';
 import { add } from 'ionicons/icons';
 
-class ProductsTable extends Component {
+interface ProductsTableProps {
+    searchTerm: string;
+}
+
+class ProductsTable extends Component <ProductsTableProps> {
     state = { // Holds data in the component
         products: [],
         vendors: [],
@@ -163,6 +167,12 @@ class ProductsTable extends Component {
 
     render() { // Render the component
         const { products, selectedProduct } = this.state;
+        const { searchTerm } = this.props;
+
+        const filteredProducts = products.filter((product: any) => {
+            return product.name.toLowerCase().includes(searchTerm.toLowerCase());
+        });
+
         return ( // "Normal HTML" to be rendered
             <IonContent className="ion-padding">  { /* Only one element can be returned, so we wrap everything in a IonContent. This IonContent holds the table */ }
                 <IonFab 
@@ -364,7 +374,7 @@ class ProductsTable extends Component {
                     </thead>
                     <tbody>
                         { /* Loop through the products array and create a row for each product */ }
-                        {this.state.products.map((product: any) => (
+                        {filteredProducts.map((product: any) => (
                             <tr key={product.id} 
                                 className="clickable"
                                 onClick={() => this.openActionSheet(product)}
