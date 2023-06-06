@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { IonButtons, IonContent, IonDatetime, IonDatetimeButton, IonHeader, IonLabel, IonMenuButton, IonModal, IonPage, IonSegment, IonSegmentButton, IonTitle, IonToolbar } from '@ionic/react';
+import { IonButtons, IonContent, IonDatetime, IonDatetimeButton, IonHeader, IonLabel, IonMenuButton, IonModal, IonPage, IonSearchbar, IonSegment, IonSegmentButton, IonTitle, IonToolbar } from '@ionic/react';
 import Inflow from '../components/Inflow';
 import Outflow from '../components/Outflow';
 import Inventory from '../components/Inventory';
@@ -8,6 +8,12 @@ const Stockmanagement: React.FC = () => {
 
     const [selectedTab, setSelectedTab] = useState("inflow"); // Save the selected tab in the state, default is "inflow", change it via setSelectedTab
     const [selectedDate, setSelectedDate] = useState(new Date().toISOString()); // Save the selected date in the state, default is today, change it via setDate
+    const [searchTerm, setSearchTerm] = useState("");  // Save the search term in the state, default is empty string, change it via setSearchTerm
+
+    const handleInput = (event: any) => {
+        const term = event.target.value;
+        setSearchTerm(term);
+    };
 
     const handleTabChange = (event: CustomEvent) => { // Handle the click on another tab
         setSelectedTab(event.detail.value); // Set the selectedTab state to the value of the clicked tab
@@ -17,7 +23,7 @@ const Stockmanagement: React.FC = () => {
 
     switch (selectedTab) { // Switch the component to render based on the selectedTab state
         case "inflow":
-            componentToRender = <Inflow key="inflow" selectedDate={selectedDate} />; // Pass the selectedDate to the component as a prop
+            componentToRender = <Inflow key="inflow" selectedDate={selectedDate} searchTerm={searchTerm} />; // Pass the selectedDate to the component as a prop
             break;
         case "outflow":
             componentToRender = <Outflow key="outflow" selectedDate={selectedDate} />; 
@@ -26,7 +32,7 @@ const Stockmanagement: React.FC = () => {
             componentToRender = <Inventory key="inventory" selectedDate={selectedDate} />
             break;
         default:
-            componentToRender = <Inflow key="inflow" selectedDate={selectedDate} />; 
+            componentToRender = <Inflow key="inflow" selectedDate={selectedDate} searchTerm={searchTerm} />; 
             break;
     }
 
@@ -42,19 +48,7 @@ const Stockmanagement: React.FC = () => {
               <IonMenuButton />
             </IonButtons>
             <IonTitle>Stockmanagement</IonTitle>
-            <IonButtons slot="end">
-              <IonDatetimeButton 
-                datetime='datetime'
-              ></IonDatetimeButton>
-            </IonButtons>
           </IonToolbar>
-        </IonHeader>
-        <IonContent fullscreen>
-          <IonHeader collapse="condense">
-            <IonToolbar>
-              <IonTitle size="large">Stockmanagement</IonTitle>
-            </IonToolbar>
-          </IonHeader>
           <IonToolbar>
               <IonSegment value={selectedTab} onIonChange={handleTabChange}>
                   <IonSegmentButton value="inflow">
@@ -68,6 +62,23 @@ const Stockmanagement: React.FC = () => {
                   </IonSegmentButton>
               </IonSegment>
           </IonToolbar>
+          <IonToolbar>
+            <IonSearchbar debounce={1000} onIonInput={handleInput}showClearButton="always" placeholder="Searchbar" ></IonSearchbar>
+            <IonButtons slot="end">
+              <IonDatetimeButton 
+                datetime='datetime'
+              ></IonDatetimeButton>
+            </IonButtons>
+          </IonToolbar>
+
+        </IonHeader>
+        <IonContent fullscreen>
+          <IonHeader collapse="condense">
+            <IonToolbar>
+              <IonTitle size="large">Stockmanagement</IonTitle>
+            </IonToolbar>
+          </IonHeader>
+
           {componentToRender} {/* Render the component based on the selectedTab state */}
           <IonModal keepContentsMounted={true}>
             <IonDatetime 

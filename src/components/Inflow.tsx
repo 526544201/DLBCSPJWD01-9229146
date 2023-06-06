@@ -5,7 +5,8 @@ import { IonButton, IonContent, IonInput, IonToast } from '@ionic/react';
 import "./Tables.css";
 
 interface InflowProps { // Create an interface for the props that are passed to this component - Otherwise TypeScript will complain
-    selectedDate: string 
+    selectedDate: string,
+    searchTerm: string
 }
 
 // TODO: MAYBE: Inflow and Outflow could be combined into one component, with a prop to determine which one it is
@@ -17,7 +18,8 @@ class Inflow extends Component <InflowProps> {
         requestId: '',
         toastIsOpen: false,
         toastMessage: "",
-        toastDuration: 0
+        toastDuration: 0,
+        productChanges: {} as { [key: number]: any}, // No idea, why this is necessary, but otherwise Input fields lose value on filtering. Working with changedProducts did not work.
     }
 
     componentDidMount() { // Lifecycle method - When the component is mounted (on the screen)
@@ -28,6 +30,13 @@ class Inflow extends Component <InflowProps> {
         })
             .then(response => {
                 this.setState({ products: response.data }); // Set the state of the products array to the response data
+                const productChanges: { [key: number]: any} = {};
+
+                response.data.forEach((product: any) => {
+                    productChanges[product.id] = null;
+                });
+
+                this.setState({productChanges: productChanges});
             })
             .catch(error => { // Catch any errors
                 this.setToast(true, error.message + " " + error.response.data.message, 10000);
@@ -44,7 +53,7 @@ class Inflow extends Component <InflowProps> {
         * @returns {string} The randomly generated request ID.
     */
     createRequestId() {
-        const characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
+        const characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789@#$%&*(){}[]<>?/-_+=';
         let result = '';
         const charactersLength = characters.length;
         for ( let i = 0; i < 15; i++ ) {
@@ -78,8 +87,22 @@ class Inflow extends Component <InflowProps> {
     handleInputChange = (event: any, productId: number) => {
         const changedProducts: {productId: number, quantity: number}[] = [...this.state.changedProducts]; // Typescript doesn't like changedProducts.push({productId, quantity});
         const quantity = event.target.value; // Get the value of the input
-        changedProducts.push({productId, quantity}); // Push the product id and quantity to the changedProducts array
+        // Check if the product is already in the changedProducts array, and if so, update the quantity, otherwise add it to the array. Major Bug!
+        if(changedProducts.find(product => product.productId === productId)) { // If the product is already in the array
+            const index = changedProducts.findIndex(product => product.productId === productId); // Get the index of the product
+            changedProducts[index].quantity = quantity; // Update the quantity
+        } else {
+            changedProducts.push({productId, quantity}); // Push the product id and quantity to the changedProducts array
+        }
+        
         this.setState({changedProducts}); // Set the state of the changedProducts array to the new array
+
+        const updatedProductChanges = {
+            ...this.state.productChanges,
+            [productId]: quantity
+        };
+
+        this.setState({productChanges: updatedProductChanges});
     }
 
     /**
@@ -97,6 +120,14 @@ class Inflow extends Component <InflowProps> {
             .catch(error => { // Catch any errors
                 this.setToast(true, error.message + " " + error.response.data.message, 10000);
             });
+    }
+
+    handleDebugSubmit = (event: any) => {
+        event.preventDefault();
+        console.log("ProductChanges:");
+        console.log(this.state.productChanges);
+        console.log("changedProducts:");
+        console.log(this.state.changedProducts);
     }
 
     /**
@@ -126,15 +157,24 @@ class Inflow extends Component <InflowProps> {
     }
 
     render() { // Render the component
-        const { products } = this.state;
+        const { products, productChanges } = this.state;
+        const { searchTerm } = this.props;
         const groupedProducts = this.groupByVendor(products);
 
-        return ( // "Normal HTML" to be rendered
-        
+        return ( // "Normal HTML" to be rendered  
             <div>  { /* Only one element can be returned, so we wrap everything in a div. This div holds the table */ }
+                <form onSubmit={this.handleDebugSubmit}>
+                    <IonButton type="submit">Debug</IonButton>
+                </form>
                 <form onSubmit={this.handleSubmit}>
-                {Object.entries(groupedProducts).map(([vendorName, products]) => ( // Object.entries returns an array of key-value pairs. 
+                {Object.entries(groupedProducts).map(([vendorName, products]) => { // Object.entries returns an array of key-value pairs. 
                     // The key is the category id, and the value is the array of products. For each key-value pair, create an Table with the corresponding products
+                    const filteredProducts = (products as any).filter((product: any) =>
+                        product.name.toLowerCase().includes(searchTerm.toLowerCase()));
+
+                    if (filteredProducts.length === 0) return null; // If there are no products, don't display the table
+
+                    return(
                     <div key={vendorName}>
                         <div className="ion-padding" slot="content">
                             <h2>{vendorName}</h2>
@@ -152,7 +192,7 @@ class Inflow extends Component <InflowProps> {
                                     </tr>
                                 </thead>
                                 <tbody>
-                                    {(products as any[]).map((product: any) => ( // Fill the table with the corresponding products
+                                    {(filteredProducts as any[]).map((product: any) => ( // Fill the table with the corresponding products
                                         <tr key={product.id}>
                                             <td>{product.name}</td>
                                             <td>{product.stock}</td>
@@ -161,6 +201,7 @@ class Inflow extends Component <InflowProps> {
                                                     placeholder='0'
                                                     min={0}
                                                     type='number'
+                                                    value={productChanges[product.id]}
                                                     onInput={(event) => this.handleInputChange(event, product.id)}    
                                                 />
                                             </td>
@@ -170,7 +211,7 @@ class Inflow extends Component <InflowProps> {
                             </table>
                         </div>
                     </div>
-                    ))}   
+                )})}   
                 <IonButton type="submit">Submit</IonButton>
                 </form>
                 <IonToast
