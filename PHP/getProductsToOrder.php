@@ -37,7 +37,11 @@
     require("util/connection.php");
 
     // Prepare the statement
-    $stmt = mysqli_prepare($conn, "SELECT * FROM products WHERE vendor_id = ? AND stock < minAmount");
+    $stmt = mysqli_prepare($conn, " SELECT products.*, vendors.name AS vendor_name, vendors.banner AS vendor_banner
+                                    FROM products
+                                    INNER JOIN vendors ON products.vendor_id = vendors.id 
+                                    WHERE vendor_id  = ? 
+                                    AND stock < minAmount");
 
     // Bind parameters
     mysqli_stmt_bind_param($stmt, "i", $vendorId);

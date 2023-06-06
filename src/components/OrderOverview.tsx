@@ -3,7 +3,7 @@ import PropTypes from 'prop-types';
 import axios from 'axios';
 import environment from '../environment';
 import "./Tables.css";
-import { IonContent, IonToast } from '@ionic/react';
+import { IonCard, IonCardContent, IonContent, IonToast } from '@ionic/react';
 
 interface OrderOverviewProps { // Create an interface for the props that are passed to this component - Otherwise TypeScript will complain
     vendorId: string 
@@ -12,7 +12,7 @@ interface OrderOverviewProps { // Create an interface for the props that are pas
 class OrderOverview extends Component<OrderOverviewProps> {
 
     state = { // Holds data in the component
-        products: [],
+        products: [] as any,
         toastIsOpen: false,
         toastMessage: "",
         toastDuration: 0
@@ -38,32 +38,41 @@ class OrderOverview extends Component<OrderOverviewProps> {
     }
 
     render() { // Render the component
+        const { products } = this.state;
+
+        const vendorBanner = products.length > 0 ? products[0].vendor_banner : ""; // Get the vendor name from the first product in the array
+
         return ( // "Normal HTML" to be rendered
             <IonContent className="ion-padding">  { /* Only one element can be returned, so we wrap everything in a IonContent. This IonContent holds the table */ }
-                <table className="table">
-                    <thead>
-                        <tr>
-                            <th>Name</th>
-                            <th>Stock</th>
-                            <th>Minimum</th>
-                            <th>To Order</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        { /* Loop through the products array and create a row for each product */ }
-                        {this.state.products.map((product: any) => (
-                            <tr key={product.id}> 
-                                <td>{product.name}</td>
-                                <td>{product.stock}</td>
-                                <td>{product.minAmount}</td>
-                                <td>
-                                    {Math.ceil((product.minAmount - product.stock) / product.size)} {/* Calculate the amount of boxes to order. Round up to the nearest full box */}
-                                    {product.size > 1 ? " Boxes" : ""} {/* If the product is sold in boxes, add "Boxes". Otherwise, leave the number alone */}
-                                </td>
-                            </tr>
-                        ))}
-                    </tbody>
-                </table>
+                <IonCard>
+                    <img src={vendorBanner} className="banner" />
+                    <IonCardContent>
+                        <table className="table">
+                            <thead>
+                                <tr>
+                                    <th>Name</th>
+                                    <th>Stock</th>
+                                    <th>Minimum</th>
+                                    <th>To Order</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                { /* Loop through the products array and create a row for each product */ }
+                                {this.state.products.map((product: any) => (
+                                    <tr key={product.id}> 
+                                        <td>{product.name}</td>
+                                        <td>{product.stock}</td>
+                                        <td>{product.minAmount}</td>
+                                        <td>
+                                            {Math.ceil((product.minAmount - product.stock) / product.size)} {/* Calculate the amount of boxes to order. Round up to the nearest full box */}
+                                            {product.size > 1 ? " Boxes" : ""} {/* If the product is sold in boxes, add "Boxes". Otherwise, leave the number alone */}
+                                        </td>
+                                    </tr>
+                                ))}
+                            </tbody>
+                        </table>
+                    </IonCardContent>
+                </IonCard>
                 <IonToast
                     isOpen={this.state.toastIsOpen}
                     onDidDismiss={() => this.setToast(false)}

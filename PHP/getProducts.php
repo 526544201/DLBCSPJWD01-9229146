@@ -25,7 +25,7 @@
     require("util/connection.php");
 
     // Query the database
-    $query =   "SELECT products.*, vendors.name as vendor_name, vendors.logo as vendor_logo, categories.name as category_name, shelves.name as shelf_name
+    $query =   "SELECT products.*, vendors.name AS vendor_name, vendors.logo AS vendor_logo, vendors.banner AS vendor_banner, categories.name AS category_name, shelves.name AS shelf_name
                 FROM products
                 INNER JOIN vendors ON products.vendor_id = vendors.id
                 INNER JOIN categories ON products.category_id = categories.id
