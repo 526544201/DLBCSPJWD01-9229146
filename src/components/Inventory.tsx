@@ -39,11 +39,11 @@ class Inventory extends Component {
     }
 
     handleInputChange = (event: any, productId: any) => {
-        return;
+        return; // TODO: Implement functionality!
     }
 
     handleSubmit = (event: any) => {
-        return;
+        return; // TODO: Implement functionality!
     }
 
     setToast = (isOpen: boolean, message?: string, duration?: number) => {

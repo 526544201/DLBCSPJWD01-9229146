@@ -4,9 +4,13 @@ import environment from '../environment';
 import { IonButton, IonContent, IonInput, IonToast } from '@ionic/react';
 import "./Tables.css";
 
+interface InflowProps { // Create an interface for the props that are passed to this component - Otherwise TypeScript will complain
+    selectedDate: string 
+}
+
 // TODO: MAYBE: Inflow and Outflow could be combined into one component, with a prop to determine which one it is
 
-class Inflow extends Component {
+class Inflow extends Component <InflowProps> {
     state = { // Holds data in the component
         products: [] , // Holds the products from the db
         changedProducts: [], // Holds the products where user changes the stock
@@ -103,6 +107,7 @@ class Inflow extends Component {
     createPayload() {
         const changedProducts: {productId: number, quantity: number}[] = this.state.changedProducts;
         const payload = {
+            date: this.props.selectedDate,
             type: 'Inflow',
             requestId: this.state.requestId,
             data: changedProducts

@@ -22,10 +22,11 @@
         die("Bad request method");
     };
 
-    // Get values from payload
+    // Get values from payload TODO: Validate
     $requestId = $jsonPayload["requestId"];
     $type = $jsonPayload["type"];
     $data = $jsonPayload["data"];
+    $date = $jsonPayload["date"];
 
     // Database Connection
     require("util/connection.php");
@@ -53,16 +54,16 @@
         // Send status code 202 and debug message for demonstration purposes
         http_response_code(202);
         echo json_encode(array(
-            "debug" => "Request already exists"
+            "message" => "Request already exists"
         ));
         die();
     }
 
     // Prepare the statement
-    $stmt = mysqli_prepare($conn, "INSERT INTO stockchanges (request_id, type) VALUES (?, ?)");
+    $stmt = mysqli_prepare($conn, "INSERT INTO stockchanges (request_id, `type`, `date`) VALUES (?, ?, ?)");
 
     // Bind parameters
-    mysqli_stmt_bind_param($stmt, "ss", $requestId, $type);
+    mysqli_stmt_bind_param($stmt, "sss", $requestId, $type, $date);
 
     // Execute the statement
     mysqli_stmt_execute($stmt);
