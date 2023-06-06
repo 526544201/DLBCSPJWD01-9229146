@@ -17,6 +17,9 @@ const Stockmanagement: React.FC = () => {
 
     const handleTabChange = (event: CustomEvent) => { // Handle the click on another tab
         setSelectedTab(event.detail.value); // Set the selectedTab state to the value of the clicked tab
+        if(event.detail.value === "inventory") { // If the tab is inventory, set the selectedDate state to today
+            setSelectedDate(new Date().toISOString()); // NO IDEA WHY, but this finally kills the time!
+        }
     };
 
     let componentToRender; // Initialize a variable to store the component to render
@@ -26,7 +29,7 @@ const Stockmanagement: React.FC = () => {
             componentToRender = <Inflow key="inflow" selectedDate={selectedDate} searchTerm={searchTerm} />; // Pass the selectedDate to the component as a prop
             break;
         case "outflow":
-            componentToRender = <Outflow key="outflow" selectedDate={selectedDate} />; 
+            componentToRender = <Outflow key="outflow" selectedDate={selectedDate} searchTerm={searchTerm} />; 
             break;
         case "inventory":
             componentToRender = <Inventory key="inventory" selectedDate={selectedDate} />
@@ -62,6 +65,7 @@ const Stockmanagement: React.FC = () => {
                   </IonSegmentButton>
               </IonSegment>
           </IonToolbar>
+          {selectedTab === "inflow" || selectedTab === "outflow" ? (
           <IonToolbar>
             <IonSearchbar debounce={1000} onIonInput={handleInput}showClearButton="always" placeholder="Searchbar" ></IonSearchbar>
             <IonButtons slot="end">
@@ -70,7 +74,7 @@ const Stockmanagement: React.FC = () => {
               ></IonDatetimeButton>
             </IonButtons>
           </IonToolbar>
-
+          ) : null}
         </IonHeader>
         <IonContent fullscreen>
           <IonHeader collapse="condense">
@@ -87,6 +91,7 @@ const Stockmanagement: React.FC = () => {
               firstDayOfWeek={1} // Set monday as the first day of the week
               showDefaultButtons={true} // Show the default buttons (Cancel + Done)
               onIonChange={handleDateChange} // Handle the click on another date
+              value={selectedDate} // Set the value of the IonDatetimeButton to the selectedDate state
             ></IonDatetime>
           </IonModal>
         </IonContent>
