@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import axios from 'axios';
 import environment from '../environment';
-import { IonButton, IonContent, IonInput, IonToast } from '@ionic/react';
+import { IonButton, IonCard, IonCardContent, IonCardHeader, IonContent, IonInput, IonToast } from '@ionic/react';
 import "./Tables.css";
 
 interface OutflowProps { // Create an interface for the props that are passed to this component - Otherwise TypeScript will complain
@@ -143,11 +143,14 @@ class Outflow extends Component <OutflowProps> {
                         product.name.toLowerCase().includes(searchTerm.toLowerCase()));
 
                     if (filteredProducts.length === 0) return null; // If there are no products, don't display the table
-
+                    
                     return(
                     <div key={categoryName}>
-                        <div className="ion-padding" slot="content">
-                            <h2>{categoryName}</h2>
+                        <IonCard>
+                            <div className="bannerDiv">
+                                <IonCardHeader className="vendorHeader">{categoryName}</IonCardHeader>
+                            </div>             
+                            <IonCardContent className="cardTable">
                             <table className="table">
                                 <colgroup>
                                     <col style={{ width: '50%' }} />
@@ -179,8 +182,9 @@ class Outflow extends Component <OutflowProps> {
                                     ))}
                                 </tbody>
                             </table>
-                        </div>
-                    </div>
+                            </IonCardContent>
+                            </IonCard>
+                        </div>  
                     )})}   
                 <IonButton type="submit">Submit</IonButton>
                 </form>

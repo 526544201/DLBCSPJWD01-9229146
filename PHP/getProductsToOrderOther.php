@@ -22,7 +22,7 @@
     require("util/connection.php");
 
     // Prepare the statement
-    $stmt = mysqli_prepare($conn, " SELECT products.*, vendors.name AS vendor_name
+    $stmt = mysqli_prepare($conn, " SELECT products.*, vendors.name AS vendor_name, vendors.logo AS vendor_logo
                                     FROM products
                                     INNER JOIN vendors ON products.vendor_id = vendors.id 
                                     WHERE vendor_id 

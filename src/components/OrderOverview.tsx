@@ -46,7 +46,7 @@ class OrderOverview extends Component<OrderOverviewProps> {
             <IonContent className="ion-padding">  { /* Only one element can be returned, so we wrap everything in a IonContent. This IonContent holds the table */ }
                 <IonCard>
                     <img src={vendorBanner} className="banner" />
-                    <IonCardContent>
+                    <IonCardContent className="cardTable">
                         <table className="table">
                             <thead>
                                 <tr>

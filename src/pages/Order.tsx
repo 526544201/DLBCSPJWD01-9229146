@@ -35,14 +35,14 @@ const Order: React.FC = () => {
             <IonButtons slot="start">
               <IonMenuButton />
             </IonButtons>
-            <IonTitle>Orderoverview</IonTitle>
+            <IonTitle>Order Overview</IonTitle>
           </IonToolbar>
         </IonHeader>
 
         <IonContent fullscreen>
           <IonHeader collapse="condense">
             <IonToolbar>
-              <IonTitle size="large">Orderoverview</IonTitle>
+              <IonTitle size="large">Order Overview</IonTitle>
             </IonToolbar>
           </IonHeader>
           <IonToolbar>

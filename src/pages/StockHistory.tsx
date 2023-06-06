@@ -38,7 +38,7 @@ const StockHistory: React.FC = () => {
             <IonButtons slot="start">
                 <IonMenuButton />
             </IonButtons>
-            <IonTitle>Stock-History</IonTitle>
+            <IonTitle>Stock History</IonTitle>
             </IonToolbar>
         </IonHeader>
 

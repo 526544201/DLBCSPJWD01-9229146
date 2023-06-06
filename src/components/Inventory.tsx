@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import axios from 'axios';
 import environment from '../environment';
-import { IonButton, IonContent, IonInput, IonToast } from '@ionic/react';
+import { IonButton, IonCard, IonCardContent, IonCardHeader, IonContent, IonInput, IonToast } from '@ionic/react';
 import "./Tables.css";
 
 interface InventoryProps {
@@ -109,8 +109,11 @@ class Inventory extends Component <InventoryProps> {
                 {Object.entries(groupedProducts).map(([shelfName, products]) => ( // Object.entries returns an array of key-value pairs. 
                     // The key is the category id, and the value is the array of products. For each key-value pair, create an Table with the corresponding products
                     <div key={shelfName}>
-                        <div className="ion-padding" slot="content">
-                            <h2>{shelfName}</h2>
+                        <IonCard>
+                            <div className="bannerDiv">
+                                <IonCardHeader className="vendorHeader">{shelfName}</IonCardHeader>
+                            </div>             
+                            <IonCardContent className="cardTable">
                             <table className="table">
                                 <colgroup>
                                     <col style={{ width: '50%' }} />
@@ -141,7 +144,8 @@ class Inventory extends Component <InventoryProps> {
                                     ))}
                                 </tbody>
                             </table>
-                        </div>
+                            </IonCardContent>                      
+                        </IonCard>
                     </div>
                     ))}   
                 <IonButton type="submit">Submit</IonButton>

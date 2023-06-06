@@ -50,7 +50,7 @@ const Stockmanagement: React.FC = () => {
             <IonButtons slot="start">
               <IonMenuButton />
             </IonButtons>
-            <IonTitle>Stockmanagement</IonTitle>
+            <IonTitle>Stock Management</IonTitle>
           </IonToolbar>
           <IonToolbar>
               <IonSegment value={selectedTab} onIonChange={handleTabChange}>
@@ -79,7 +79,7 @@ const Stockmanagement: React.FC = () => {
         <IonContent fullscreen>
           <IonHeader collapse="condense">
             <IonToolbar>
-              <IonTitle size="large">Stockmanagement</IonTitle>
+              <IonTitle size="large">Stock Management</IonTitle>
             </IonToolbar>
           </IonHeader>
 

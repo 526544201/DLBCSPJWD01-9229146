@@ -8,7 +8,7 @@ import "./Tables.css";
 class OtherOrders extends Component {
 
     state = { // Holds data in the component
-        products: [],
+        products: [] as any[],
         toastIsOpen: false,
         toastMessage: "",
         toastDuration: 0
@@ -48,15 +48,16 @@ class OtherOrders extends Component {
             null // TODO: Add a loading indicator
         )
 
-
+        const vendorLogo = products.length > 0 ? products[0].vendor_logo : ""; // Get the vendor logo from the first product in the array
         return ( // "Normal HTML" to be rendered
             <IonContent className="ion-padding">
                 <IonAccordionGroup>
                     {Object.entries(groupedProducts).map(([vendorName, products]) => ( // Typescript shenanigans / Object.entries returns an array of key-value pairs. 
                         // The key is the vendor id, and the value is the array of products. For each key-value pair, create an IonAccordion
+                        // Get the vendor logo from the first product in the array
                         <IonAccordion key={vendorName}> 
                             <IonItem slot="header" color="light">
-                                <IonLabel>{vendorName}</IonLabel>
+                                <IonLabel><img src={vendorLogo} className="middle-logo" /> {vendorName} </IonLabel>
                             </IonItem>
                             <div className="ion-padding" slot="content">
                                 <table className="table">

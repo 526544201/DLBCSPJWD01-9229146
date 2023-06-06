@@ -64,8 +64,9 @@ const Menu: React.FC = () => {
     return (
       <IonMenu contentId="main" type="overlay">
         <IonContent>
+        <img src="../assets/images/iu_logo.png"/>
           <IonList id="inbox-list">
-            <IonListHeader>Java and Webdevelopment</IonListHeader>
+            <IonListHeader>Java and Web Development</IonListHeader>
             <IonNote>Please Login</IonNote>
             <IonMenuToggle autoHide={false}>
               <IonItem className={location.pathname === '/page/Login' ? 'selected' : ''} routerLink="/page/Login" routerDirection="none" lines="none" detail={false}>
@@ -81,6 +82,7 @@ const Menu: React.FC = () => {
   return (
     <IonMenu contentId="main" type="overlay">
       <IonContent>
+        <img src="../assets/images/iu_logo.png"/>
         <IonList id="inbox-list">
           <IonListHeader>Java and Web Development</IonListHeader>
           <IonNote>Student-Id: 9229146</IonNote>
