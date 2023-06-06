@@ -33,3 +33,15 @@
     .table tr.clickable:hover {
         cursor: pointer;
     }
+
+.tiny-symbol {
+    display: inline-block;
+    vertical-align: middle;
+    margin-right: 5px;
+    width: 20px;
+    height: 20px;
+}
+
+.vendor-field {
+    white-space: nowrap;
+}

@@ -13,7 +13,7 @@ import {
 } from '@ionic/react';
 
 import { useLocation } from 'react-router-dom';
-import { heartOutline, heartSharp, mailOutline, mailSharp, paperPlaneOutline, paperPlaneSharp } from 'ionicons/icons';
+import { heartOutline, heartSharp, mailOutline, mailSharp,  fileTrayStackedOutline, clipboardOutline, cartOutline, clipboardSharp, cartSharp, fileTrayStackedSharp, beerOutline, beerSharp, keyOutline, keySharp, constructOutline, constructSharp } from 'ionicons/icons';
 import './Menu.css';
 
 interface AppPage {
@@ -27,32 +27,32 @@ const appPages: AppPage[] = [
   {
     title: 'Products',
     url: '/page/Products',
-    iosIcon: mailOutline,
-    mdIcon: mailSharp
+    iosIcon: beerOutline,
+    mdIcon: beerSharp
   },
   {
-    title: 'Stockmanagement',
+    title: 'Stock Management',
     url: '/page/Stock',
-    iosIcon: paperPlaneOutline,
-    mdIcon: paperPlaneSharp
+    iosIcon: clipboardOutline,
+    mdIcon: clipboardSharp
   },
   {
     title: 'Order',
     url: '/page/Order',
-    iosIcon: heartOutline,
-    mdIcon: heartSharp
+    iosIcon: cartOutline,
+    mdIcon: cartSharp
   },
   {
-    title: 'Stockhistory', // TODO: Delete this
+    title: 'Stock History',
     url: '/page/Stockhistory',
-    iosIcon: heartOutline,
-    mdIcon: heartSharp
+    iosIcon: fileTrayStackedOutline,
+    mdIcon: fileTrayStackedSharp
   },
   {
     title: 'Login', // TODO: Delete this
     url: '/page/Login',
-    iosIcon: heartOutline,
-    mdIcon: heartSharp
+    iosIcon: keyOutline,
+    mdIcon: keySharp
   }
 ];
 

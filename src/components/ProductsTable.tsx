@@ -359,17 +359,17 @@ class ProductsTable extends Component <ProductsTableProps> {
         
                 <table className="table">
                     <colgroup>
-                        <col style={{ width: '60%' }} />
+                        <col style={{ width: '65%' }} />
                         <col style={{ width: '20%' }} />
                         <col style={{ width: '10%' }} />
-                        <col style={{ width: '10%' }} />
+                        <col style={{ width: '5%' }} />
                     </colgroup>                    
                     <thead>
                         <tr>
                             <th>Name</th>
                             <th>Vendor</th>
                             <th>Stock</th>
-                            <th>Minimum</th>
+                            <th>Min.</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -380,7 +380,18 @@ class ProductsTable extends Component <ProductsTableProps> {
                                 onClick={() => this.openActionSheet(product)}
                                 > 
                                     <td>{product.name}</td>
-                                    <td>{product.vendor_name}</td>
+                                    <td>
+                                        <span className="vendor-field">
+                                            {product.vendor_logo ? (
+                                                <span className="tiny-symbol">
+                                                    <img src={product.vendor_logo} alt={product.vendor_name} ></img>
+                                                </span>
+                                            ): null}
+                                            <span className="vendor-name">
+                                                {product.vendor_name}
+                                            </span>
+                                        </span>
+                                    </td>
                                     <td>{product.stock}</td>
                                     <td>{product.minAmount}</td>
                             </tr>
