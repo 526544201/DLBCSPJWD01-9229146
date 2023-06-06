@@ -90,7 +90,11 @@ class Inflow extends Component <InflowProps> {
         // Check if the product is already in the changedProducts array, and if so, update the quantity, otherwise add it to the array. Major Bug!
         if(changedProducts.find(product => product.productId === productId)) { // If the product is already in the array
             const index = changedProducts.findIndex(product => product.productId === productId); // Get the index of the product
-            changedProducts[index].quantity = quantity; // Update the quantity
+            if (quantity === '') { // If the quantity is empty
+                changedProducts.splice(index, 1); // Remove the product from the array
+            } else {
+                changedProducts[index].quantity = quantity; // Update the quantity
+            }
         } else {
             changedProducts.push({productId, quantity}); // Push the product id and quantity to the changedProducts array
         }
@@ -112,10 +116,18 @@ class Inflow extends Component <InflowProps> {
     */
     handleSubmit = (event: any) => {
         event.preventDefault();
+        if(this.state.changedProducts.length === 0) { // If there are no changed products
+            this.setToast(true, "No products changed!", 3000);
+            return;
+        }
+
         const payload = this.createPayload();
         axios.post(environment.apiUrl + '/bookStockchange.php', payload ) // Post the payload to the API via http request
             .then(response => {
                 this.setToast(true, response.data.message, 10000);
+                this.setState({changedProducts: []}); // Reset the changedProducts array
+                this.setState({requestId: ''}); // Reset the request id
+                this.setState({productChanges: {}}); // Reset the productChanges array
             })
             .catch(error => { // Catch any errors
                 this.setToast(true, error.message + " " + error.response.data.message, 10000);
@@ -128,6 +140,8 @@ class Inflow extends Component <InflowProps> {
         console.log(this.state.productChanges);
         console.log("changedProducts:");
         console.log(this.state.changedProducts);
+        console.log("Payload:");
+        console.log(this.createPayload());
     }
 
     /**
