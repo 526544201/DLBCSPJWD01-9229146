@@ -62,21 +62,7 @@ const Menu: React.FC = () => {
 
   if(localStorage.getItem('token') === null) {
     return (
-      <IonMenu contentId="main" type="overlay">
-        <IonContent>
-        <img src="../assets/images/iu_logo.png"/>
-          <IonList id="inbox-list">
-            <IonListHeader>Java and Web Development</IonListHeader>
-            <IonNote>Please Login</IonNote>
-            <IonMenuToggle autoHide={false}>
-              <IonItem className={location.pathname === '/page/Login' ? 'selected' : ''} routerLink="/page/Login" routerDirection="none" lines="none" detail={false}>
-                <IonIcon aria-hidden="true" slot="start" ios={mailOutline} md={mailSharp} />
-                <IonLabel>Login</IonLabel>
-              </IonItem>
-            </IonMenuToggle>
-          </IonList>
-        </IonContent>
-      </IonMenu>
+      null
     )
   } else {
   return (
