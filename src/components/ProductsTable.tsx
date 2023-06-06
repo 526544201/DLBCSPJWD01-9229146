@@ -170,7 +170,7 @@ class ProductsTable extends Component <ProductsTableProps> {
         const { searchTerm } = this.props;
 
         const filteredProducts = products.filter((product: any) => {
-            return product.name.toLowerCase().includes(searchTerm.toLowerCase());
+            return product.name.toLowerCase().includes(searchTerm.toLowerCase()) || product.vendor_name.toLowerCase().match(searchTerm.toLowerCase());
         });
 
         return ( // "Normal HTML" to be rendered
@@ -359,14 +359,18 @@ class ProductsTable extends Component <ProductsTableProps> {
         
                 <table className="table">
                     <colgroup>
-                        <col style={{ width: '65%' }} />
                         <col style={{ width: '20%' }} />
-                        <col style={{ width: '10%' }} />
+                        <col className="no-mobile" style={{ width: '20%' }} />
+                        <col className="no-mobile" style={{ width: '20%' }} />
+                        <col style={{ width: '20%' }} />
+                        <col style={{ width: '5%' }} />
                         <col style={{ width: '5%' }} />
                     </colgroup>                    
                     <thead>
                         <tr>
                             <th>Name</th>
+                            <th className="no-mobile">Category</th>
+                            <th className="no-mobile">Item Nr.</th>
                             <th>Vendor</th>
                             <th>Stock</th>
                             <th>Min.</th>
@@ -380,6 +384,8 @@ class ProductsTable extends Component <ProductsTableProps> {
                                 onClick={() => this.openActionSheet(product)}
                                 > 
                                     <td>{product.name}</td>
+                                    <td className="no-mobile">{product.category_name}</td>
+                                    <td className="no-mobile">{product.item_no_byvendor}</td>
                                     <td>
                                         <span className="vendor-field">
                                             {product.vendor_logo ? (

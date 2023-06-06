@@ -44,4 +44,13 @@
 
 .vendor-field {
     white-space: nowrap;
+    display: flex;
+    align-items: center;
+    
+}
+
+@media (max-width: 768px) {
+    .no-mobile {
+        display: none;
+    }
 }
