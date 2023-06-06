@@ -87,9 +87,15 @@
         switch($type) {
             case "Inflow":
                 $newStock = $oldStock + $product["quantity"];
+                $quantity = $product["quantity"];
                 break;
             case "Outflow":
                 $newStock = $oldStock - $product["quantity"];
+                $quantity = $product["quantity"];
+                break;
+            case "Inventory":
+                $newStock = $product["quantity"];
+                $quantity = $product["quantity"] - $oldStock;
                 break;
         }
 
@@ -103,9 +109,13 @@
                 $stmt = mysqli_prepare($conn, "INSERT INTO outflow (change_id, product_id, quantity, old_Stock, new_Stock) VALUES (?, ?, ?, ?, ?)");
                 $stmt2 = mysqli_prepare($conn, "UPDATE products SET stock = ? WHERE id = ?");
                 break;
+            case "Inventory":
+                $stmt = mysqli_prepare($conn, "INSERT INTO inventory (change_id, product_id, quantity, old_Stock, new_Stock) VALUES (?, ?, ?, ?, ?)");
+                $stmt2 = mysqli_prepare($conn, "UPDATE products SET stock = ? WHERE id = ?");
+                break;
         }
         // Bind parameters
-        mysqli_stmt_bind_param($stmt, "siiii", $stockChangeId, $product["productId"], $product["quantity"], $oldStock, $newStock);
+        mysqli_stmt_bind_param($stmt, "siiii", $stockChangeId, $product["productId"], $quantity, $oldStock, $newStock);
         mysqli_stmt_bind_param($stmt2, "ii", $newStock, $product["productId"]);
 
         // Execute the statements

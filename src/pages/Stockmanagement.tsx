@@ -23,7 +23,7 @@ const Stockmanagement: React.FC = () => {
             componentToRender = <Outflow key="outflow" selectedDate={selectedDate} />; 
             break;
         case "inventory":
-            componentToRender = <Inventory key="inventory" />
+            componentToRender = <Inventory key="inventory" selectedDate={selectedDate} />
             break;
         default:
             componentToRender = <Inflow key="inflow" selectedDate={selectedDate} />; 

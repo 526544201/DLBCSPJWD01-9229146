@@ -4,12 +4,18 @@ import environment from '../environment';
 import { IonButton, IonContent, IonInput, IonToast } from '@ionic/react';
 import "./Tables.css";
 
-class Inventory extends Component {
+interface InventoryProps {
+    selectedDate: string
+}
+
+class Inventory extends Component <InventoryProps> {
     state = { // Holds data in the component
         products: [],
+        updatedStocks: [],
         toastIsOpen: false,
         toastMessage: "",
-        toastDuration: 0
+        toastDuration: 0,
+        requestId: ""
     }
 
     componentDidMount() { // Lifecycle method - When the component is mounted (on the screen)
@@ -26,6 +32,20 @@ class Inventory extends Component {
             });
     }
 
+    /**
+    * Generates a random request ID. Gets called when the user changes the stock of a product.
+    * @returns {string} The randomly generated request ID.
+    */
+    createRequestId() {
+        const characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
+        let result = '';
+        const charactersLength = characters.length;
+        for ( let i = 0; i < 15; i++ ) {
+            result += characters.charAt(Math.floor(Math.random() * charactersLength));
+        }
+        return result;
+    }
+
     groupByShelf(products: any) {
         const groupedProducts = products.reduce((grouped: any, product: any) => { // Iterate through the products array, accumulating the products into groups based on the callback function
             const shelf = product.shelf_name; // Get the shelf name of the current product
@@ -39,11 +59,39 @@ class Inventory extends Component {
     }
 
     handleInputChange = (event: any, productId: any) => {
-        return; // TODO: Implement functionality!
+        const updatedStocks: {productId: number, quantity: number}[] = [...this.state.updatedStocks]; // Typescript doesn't like updatedStocks.push({productId, quantity});
+        const quantity = event.target.value; // Get the value of the input
+        updatedStocks.push({productId, quantity}); // Push the product id and quantity to the updatedStocks array
+        this.setState({updatedStocks}); // Set the state of the updatedStocks array to the new array
     }
 
     handleSubmit = (event: any) => {
-        return; // TODO: Implement functionality!
+        event.preventDefault();
+
+        // Check if the user has changed the stock of any products
+        if (Object.keys(this.state.updatedStocks).length === 0 || Object.keys(this.state.updatedStocks).length === undefined) {
+            this.setToast(true, "No products have been updated!", 3000);
+            return;
+        }
+        const payload = this.createPayload();
+        axios.post(environment.apiUrl + '/bookStockchange.php', payload ) // Post the payload to the API via http request
+            .then(response => {
+                this.setToast(true, response.data.message, 10000);
+            })
+            .catch(error => { // Catch any errors
+                this.setToast(true, error.message + " " + error.response.data.message, 10000);
+            });
+    }
+
+    createPayload() {
+        const changedProducts: {productId: number, quantity: number}[] = this.state.updatedStocks;
+        const payload = {
+            date: this.props.selectedDate,
+            type: 'Inventory',
+            requestId: this.state.requestId,
+            data: changedProducts
+        };
+        return payload;
     }
 
     setToast = (isOpen: boolean, message?: string, duration?: number) => {
