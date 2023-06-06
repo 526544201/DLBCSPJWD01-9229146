@@ -5,7 +5,8 @@ import { IonButton, IonContent, IonInput, IonToast } from '@ionic/react';
 import "./Tables.css";
 
 interface OutflowProps { // Create an interface for the props that are passed to this component - Otherwise TypeScript will complain
-    selectedDate: string 
+    selectedDate: string,
+    searchTerm: string
 }
 
 // TODO: MAYBE: Inflow and Outflow could be combined into one component, with a prop to determine which one it is
@@ -17,13 +18,22 @@ class Outflow extends Component <OutflowProps> {
         requestId: '',
         toastIsOpen: false,
         toastMessage: "",
-        toastDuration: 0
+        toastDuration: 0,
+        productChanges: {} as { [key: number]: any},
     }
 
     componentDidMount() { // Lifecycle method - When the component is mounted (on the screen)
         axios.get(environment.apiUrl + '/getProducts.php') // Get the products from the API via http request
             .then(response => {
                 this.setState({ products: response.data }); // Set the state of the products array to the response data
+
+                const productChanges: { [key: number]: any} = {};
+
+                response.data.forEach((product: any) => {
+                    productChanges[product.id] = null;
+                });
+
+                this.setState({productChanges: productChanges});
             })
             .catch(error => { // Catch any errors
                 this.setToast(true, error.message + " " + error.response.data.message, 10000);
@@ -37,7 +47,7 @@ class Outflow extends Component <OutflowProps> {
     }
 
     createRequestId() {
-        const characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
+        const characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789@#$%&*(){}[]<>?/-_+=';
         let result = '';
         const charactersLength = characters.length;
         for ( let i = 0; i < 15; i++ ) {
@@ -62,20 +72,45 @@ class Outflow extends Component <OutflowProps> {
     handleInputChange = (event: any, productId: any) => {
         const changedProducts: {productId: number, quantity: number}[] = [...this.state.changedProducts]; // Typescript doesn't like changedProducts.push({productId, quantity});
         const quantity = event.target.value; // Get the value of the input
-        changedProducts.push({productId, quantity}); // Push the product id and quantity to the changedProducts array
+        // Check if the product is already in the changedProducts array, and if so, update the quantity, otherwise add it to the array. Major Bug!
+        if(changedProducts.find(product => product.productId === productId)) { // If the product is already in the array
+            const index = changedProducts.findIndex(product => product.productId === productId); // Get the index of the product
+            if (quantity === '') { // If the quantity is empty
+                changedProducts.splice(index, 1); // Remove the product from the array
+            } else {
+                changedProducts[index].quantity = quantity; // Update the quantity
+            }
+        } else {
+            changedProducts.push({productId, quantity}); // Push the product id and quantity to the changedProducts array
+        }
+        
         this.setState({changedProducts}); // Set the state of the changedProducts array to the new array
-        console.log(this.state.changedProducts); // DEBUG
+
+        const updatedProductChanges = {
+            ...this.state.productChanges,
+            [productId]: quantity
+        };
+
+        this.setState({productChanges: updatedProductChanges});
     }
 
     handleSubmit = (event: any) => {
         event.preventDefault();
+        if(this.state.changedProducts.length === 0) { // If there are no changed products
+            this.setToast(true, "No products changed!", 3000);
+            return;
+        }
+
         const payload = this.createPayload();
         axios.post(environment.apiUrl + '/bookStockchange.php', payload ) // Post the payload to the API via http request
             .then(response => {
-                this.setToast(true, "Successfully booked", 3000);
+                this.setToast(true, response.data.message, 10000);
+                this.setState({changedProducts: []}); // Reset the changedProducts array
+                this.setState({requestId: ''}); // Reset the request id
+                this.setState({productChanges: {}}); // Reset the productChanges array
             })
             .catch(error => { // Catch any errors
-                this.setToast(true, error.message + ": " + error.response.data.message, 10000);
+                this.setToast(true, error.message + " " + error.response.data.message, 10000);
             });
     }
 
@@ -95,14 +130,21 @@ class Outflow extends Component <OutflowProps> {
     }
 
     render() { // Render the component
-        const { products } = this.state;
+        const { products, productChanges } = this.state;
+        const { searchTerm } = this.props;
         const groupedProducts = this.groupByCategory(products);
 
         return ( // "Normal HTML" to be rendered        
             <div>  { /* Only one element can be returned, so we wrap everything in a div. This div holds the table */ }
                 <form onSubmit={this.handleSubmit}>
-                {Object.entries(groupedProducts).map(([categoryName, products]) => ( // Object.entries returns an array of key-value pairs. 
+                {Object.entries(groupedProducts).map(([categoryName, products]) => { // Object.entries returns an array of key-value pairs. 
                     // The key is the category id, and the value is the array of products. For each key-value pair, create an Table with the corresponding products
+                    const filteredProducts = (products as any).filter((product: any) =>
+                        product.name.toLowerCase().includes(searchTerm.toLowerCase()));
+
+                    if (filteredProducts.length === 0) return null; // If there are no products, don't display the table
+
+                    return(
                     <div key={categoryName}>
                         <div className="ion-padding" slot="content">
                             <h2>{categoryName}</h2>
@@ -120,7 +162,7 @@ class Outflow extends Component <OutflowProps> {
                                     </tr>
                                 </thead>
                                 <tbody>
-                                    {(products as any[]).map((product: any) => ( // Fill the table with the corresponding products
+                                    {(filteredProducts as any[]).map((product: any) => ( // Fill the table with the corresponding products
                                         <tr key={product.id}>
                                             <td>{product.name}</td>
                                             <td>{product.stock}</td>
@@ -129,6 +171,7 @@ class Outflow extends Component <OutflowProps> {
                                                     placeholder='0'
                                                     min={0}
                                                     type='number'
+                                                    value={productChanges[product.id]}
                                                     onInput={(event) => this.handleInputChange(event, product.id)}    
                                                 />
                                             </td>
@@ -138,7 +181,7 @@ class Outflow extends Component <OutflowProps> {
                             </table>
                         </div>
                     </div>
-                    ))}   
+                    )})}   
                 <IonButton type="submit">Submit</IonButton>
                 </form>
 
