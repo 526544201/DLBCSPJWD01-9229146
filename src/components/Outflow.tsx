@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import axios from 'axios';
 import environment from '../environment';
-import { IonButton, IonCard, IonCardContent, IonCardHeader, IonContent, IonInput, IonToast } from '@ionic/react';
+import { IonAlert, IonButton, IonCard, IonCardContent, IonCardHeader, IonContent, IonInput, IonToast } from '@ionic/react';
 import "./Tables.css";
 
 interface OutflowProps { // Create an interface for the props that are passed to this component - Otherwise TypeScript will complain
@@ -20,10 +20,12 @@ class Outflow extends Component <OutflowProps> {
         toastMessage: "",
         toastDuration: 0,
         productChanges: {} as { [key: number]: any},
+        alert401IsOpen: false,
+        alert401Message: ''
     }
 
     componentDidMount() { // Lifecycle method - When the component is mounted (on the screen)
-        axios.get(environment.apiUrl + '/getProducts.php') // Get the products from the API via http request
+        axios.get(environment.apiUrl + '/getProducts.php', environment.config) // Get the products from the API via http request
             .then(response => {
                 this.setState({ products: response.data }); // Set the state of the products array to the response data
 
@@ -36,7 +38,11 @@ class Outflow extends Component <OutflowProps> {
                 this.setState({productChanges: productChanges});
             })
             .catch(error => { // Catch any errors
-                this.setToast(true, error.message + " " + error.response.data.message, 10000);
+                if(error.response.status === 401) {
+                    this.handle401(error);
+                } else {
+                    this.setToast(true, error.message + " " + error.response.data.message, 10000);
+                }
             })
     }
 
@@ -102,7 +108,7 @@ class Outflow extends Component <OutflowProps> {
         }
 
         const payload = this.createPayload();
-        axios.post(environment.apiUrl + '/bookStockchange.php', payload ) // Post the payload to the API via http request
+        axios.post(environment.apiUrl + '/bookStockchange.php', payload, environment.config ) // Post the payload to the API via http request
             .then(response => {
                 this.setToast(true, response.data.message, 10000);
                 this.setState({changedProducts: []}); // Reset the changedProducts array
@@ -110,8 +116,12 @@ class Outflow extends Component <OutflowProps> {
                 this.setState({productChanges: {}}); // Reset the productChanges array
             })
             .catch(error => { // Catch any errors
-                this.setToast(true, error.message + " " + error.response.data.message, 10000);
-            });
+                if(error.response.status === 401) {
+                    this.handle401(error);
+                } else {
+                    this.setToast(true, error.message + " " + error.response.data.message, 10000);
+                }
+            })
     }
 
     createPayload() {
@@ -129,6 +139,10 @@ class Outflow extends Component <OutflowProps> {
         this.setState({ toastIsOpen: isOpen, toastMessage: message, toastDuration: duration });
     }
 
+    handle401 = (error: any) => {
+        this.setState({alert401IsOpen: true, alert401Message: error.response.data.message});
+    }
+
     render() { // Render the component
         const { products, productChanges } = this.state;
         const { searchTerm } = this.props;
@@ -143,7 +157,7 @@ class Outflow extends Component <OutflowProps> {
                         product.name.toLowerCase().includes(searchTerm.toLowerCase()));
 
                     if (filteredProducts.length === 0) return null; // If there are no products, don't display the table
-                    
+
                     return(
                     <div key={categoryName}>
                         <IonCard>
@@ -194,6 +208,18 @@ class Outflow extends Component <OutflowProps> {
                     message={this.state.toastMessage}
                     onDidDismiss={() => this.setToast(false)}
                     duration={this.state.toastDuration}
+                />
+                <IonAlert
+                    isOpen={this.state.alert401IsOpen}
+                    onDidDismiss={() => { 
+                        this.setState({alert401IsOpen: false});
+                        localStorage.clear;
+                        window.location.href = "/page/Login";
+                    }}
+                    header="Unauthorized Access"
+                    subHeader="Please log in again."
+                    message={this.state.alert401Message}
+                    buttons={['OK']}
                 />
             </div>
         

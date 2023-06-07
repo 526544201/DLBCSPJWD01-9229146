@@ -3,7 +3,7 @@ import PropTypes from 'prop-types';
 import axios from 'axios';
 import environment from '../environment';
 import "./Tables.css";
-import { IonCard, IonCardContent, IonContent, IonToast } from '@ionic/react';
+import { IonAlert, IonCard, IonCardContent, IonContent, IonToast } from '@ionic/react';
 
 interface OrderOverviewProps { // Create an interface for the props that are passed to this component - Otherwise TypeScript will complain
     vendorId: string 
@@ -15,26 +15,38 @@ class OrderOverview extends Component<OrderOverviewProps> {
         products: [] as any,
         toastIsOpen: false,
         toastMessage: "",
-        toastDuration: 0
+        toastDuration: 0,
+        alert401IsOpen: false,
+        alert401Message: ""
     }
 
     componentDidMount() { // Lifecycle method - When the component is mounted (on the screen)
         const vendorId = this.props.vendorId; 
-        axios.get(environment.apiUrl + '/getProductsToOrder.php', {
+        axios.get(environment.apiUrl + '/getProductsToOrder.php',  {
+            ...environment.config, // Spread Operator to merge the two objects and ensure that both are included in the request
             params: { // Set the parameters for the request
                 vendor: vendorId
-            }
-        }) // Get the products from the API via http request
+            }, 
+            
+        } ) // Get the products from the API via http request
             .then(response => {
                 this.setState({ products: response.data }); // Set the state of the products array to the response data
             })
             .catch(error => { // Catch any errors
-                this.setToast(true, error.message + ": " + error.response.data.message, 10000);
+                if(error.response.status === 401) {
+                    this.handle401(error);
+                } else {
+                    this.setToast(true, error.message + " " + error.response.data.message, 10000);
+                }
             })
     }
 
     setToast(isOpen: boolean, message?: string, duration?: number) { // Set the toast message
         this.setState({ toastIsOpen: isOpen, toastMessage: message, toastDuration: duration });
+    }
+
+    handle401 = (error: any) => {
+        this.setState({alert401IsOpen: true, alert401Message: error.response.data.message});
     }
 
     render() { // Render the component
@@ -78,6 +90,18 @@ class OrderOverview extends Component<OrderOverviewProps> {
                     onDidDismiss={() => this.setToast(false)}
                     message={this.state.toastMessage}
                     duration={this.state.toastDuration}
+                />
+                <IonAlert
+                    isOpen={this.state.alert401IsOpen}
+                    onDidDismiss={() => { 
+                        this.setState({alert401IsOpen: false});
+                        localStorage.clear;
+                        window.location.href = "/page/Login";
+                    }}
+                    header="Unauthorized Access"
+                    subHeader="Please log in again."
+                    message={this.state.alert401Message}
+                    buttons={['OK']}
                 />
             </IonContent>
         )

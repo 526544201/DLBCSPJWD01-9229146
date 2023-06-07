@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import axios from 'axios';
 import environment from '../environment';
-import { IonButton, IonCard, IonCardContent, IonCardHeader, IonCardSubtitle, IonContent, IonInput, IonToast } from '@ionic/react';
+import { IonAlert, IonButton, IonCard, IonCardContent, IonCardHeader, IonCardSubtitle, IonContent, IonInput, IonToast } from '@ionic/react';
 import "./Tables.css";
 
 interface InflowProps { // Create an interface for the props that are passed to this component - Otherwise TypeScript will complain
@@ -20,10 +20,13 @@ class Inflow extends Component <InflowProps> {
         toastMessage: "",
         toastDuration: 0,
         productChanges: {} as { [key: number]: any}, // No idea, why this is necessary, but otherwise Input fields lose value on filtering. Working with changedProducts did not work.
+        alert401IsOpen: false,
+        alert401Message: ""
     }
 
     componentDidMount() { // Lifecycle method - When the component is mounted (on the screen)
-        axios.get(environment.apiUrl + '/getProducts.php', { 
+        axios.get(environment.apiUrl + '/getProducts.php', {
+            ...environment.config, 
             params: { 
                 orderby: 'item_no_byvendor'
             }
@@ -39,8 +42,12 @@ class Inflow extends Component <InflowProps> {
                 this.setState({productChanges: productChanges});
             })
             .catch(error => { // Catch any errors
-                this.setToast(true, error.message + " " + error.response.data.message, 10000);
-            });
+                if(error.response.status === 401) {
+                    this.handle401(error);
+                } else {
+                    this.setToast(true, error.message + " " + error.response.data.message, 10000);
+                }
+            })
        }
 
     componentDidUpdate(prevProps: any, prevState: any) { // Lifecycle method - When the component is updated
@@ -122,7 +129,7 @@ class Inflow extends Component <InflowProps> {
         }
 
         const payload = this.createPayload();
-        axios.post(environment.apiUrl + '/bookStockchange.php', payload ) // Post the payload to the API via http request
+        axios.post(environment.apiUrl + '/bookStockchange.php', payload, environment.config ) // Post the payload to the API via http request
             .then(response => {
                 this.setToast(true, response.data.message, 10000);
                 this.setState({changedProducts: []}); // Reset the changedProducts array
@@ -130,8 +137,12 @@ class Inflow extends Component <InflowProps> {
                 this.setState({productChanges: {}}); // Reset the productChanges array
             })
             .catch(error => { // Catch any errors
-                this.setToast(true, error.message + " " + error.response.data.message, 10000);
-            });
+                if(error.response.status === 401) {
+                    this.handle401(error);
+                } else {
+                    this.setToast(true, error.message + " " + error.response.data.message, 10000);
+                }
+            })
     }
 
     handleDebugSubmit = (event: any) => {
@@ -188,6 +199,10 @@ class Inflow extends Component <InflowProps> {
     */   
     setToast(isOpen: boolean, message?: string, duration?: number) {
         this.setState({ toastIsOpen: isOpen, toastMessage: message, toastDuration: duration });
+    }
+
+    handle401 = (error: any) => {
+        this.setState({alert401IsOpen: true, alert401Message: error.response.data.message});
     }
 
     render() { // Render the component
@@ -258,6 +273,18 @@ class Inflow extends Component <InflowProps> {
                     onDidDismiss={() => this.setToast(false)}
                     message={this.state.toastMessage}
                     duration={this.state.toastDuration}
+                />
+                <IonAlert
+                    isOpen={this.state.alert401IsOpen}
+                    onDidDismiss={() => { 
+                        this.setState({alert401IsOpen: false});
+                        localStorage.clear;
+                        window.location.href = "/page/Login";
+                    }}
+                    header="Unauthorized Access"
+                    subHeader="Please log in again."
+                    message={this.state.alert401Message}
+                    buttons={['OK']}
                 />
             </div>
         

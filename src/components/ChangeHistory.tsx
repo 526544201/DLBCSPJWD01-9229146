@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import axios from 'axios';
 import environment from '../environment';
-import { IonAccordion, IonAccordionGroup, IonContent, IonItem, IonLabel, IonToast } from '@ionic/react';
+import { IonAccordion, IonAccordionGroup, IonAlert, IonContent, IonItem, IonLabel, IonToast } from '@ionic/react';
 import FillStockHistoryAccordion from './FillStockHistoryAccordion';
 
 interface changeHistoryProps {
@@ -13,11 +13,14 @@ class ChangeHistory extends Component<changeHistoryProps> {
         stocks: [], // Holds the list of stockchanges
         toastIsOpen: false, // Tracks the visibility of the toast
         toastMessage: "", // Holds the message to be displayed in the toast
-        toastDuration: 0 // Holds the duration for which the toast should be visible
+        toastDuration: 0, // Holds the duration for which the toast should be visible
+        alert401IsOpen: false,
+        alert401Message: ""
     }
 
     componentDidMount() { // Lifecycle method - When the component is mounted (on the screen)
         axios.get(environment.apiUrl + '/getStockhistory.php', {
+            ...environment.config, // Spread Operator to merge the two objects and ensure that both are included in the request
             params: {
                 type: this.props.type
             }
@@ -26,8 +29,12 @@ class ChangeHistory extends Component<changeHistoryProps> {
                 this.setState({ stocks: response.data }); // Set the state of the stocks array to the response data
             })
             .catch(error => { // Catch any errors
-                this.setToast(true, error.message + ": " + error.response.data.message, 10000)
-            });
+                if(error.response.status === 401) {
+                    this.handle401(error);
+                } else {
+                    this.setToast(true, error.message + " " + error.response.data.message, 10000);
+                }
+            })
     }
 
     /**
@@ -38,6 +45,10 @@ class ChangeHistory extends Component<changeHistoryProps> {
     */
     setToast(isOpen: boolean, message?: string, duration?: number) {
         this.setState({ toastIsOpen: isOpen, toastMessage: message, toastDuration: duration });
+    }
+
+    handle401 = (error: any) => {
+        this.setState({alert401IsOpen: true, alert401Message: error.response.data.message});
     }
 
     render() { // Render the component
@@ -60,6 +71,18 @@ class ChangeHistory extends Component<changeHistoryProps> {
                     onDidDismiss={() => this.setToast(false)}
                     message={this.state.toastMessage}
                     duration={this.state.toastDuration}
+                />
+                <IonAlert
+                    isOpen={this.state.alert401IsOpen}
+                    onDidDismiss={() => { 
+                        this.setState({alert401IsOpen: false});
+                        localStorage.clear;
+                        window.location.href = "/page/Login";
+                    }}
+                    header="Unauthorized Access"
+                    subHeader="Please log in again."
+                    message={this.state.alert401Message}
+                    buttons={['OK']}
                 />
             </IonContent>
         )

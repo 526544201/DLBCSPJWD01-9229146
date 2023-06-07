@@ -94,14 +94,18 @@ class ProductsTable extends Component <ProductsTableProps> {
     };
 
     deleteProduct = (product: any) => { // Delete the product that was clicked
-        axios.post(environment.apiUrl + '/deleteProduct.php', {id: product.id}) // Send the id of the product to the API via http request
+        axios.post(environment.apiUrl + '/deleteProduct.php', {id: product.id}, environment.config) // Send the id of the product to the API via http request
         .then(response => {
             this.setToast(true, "Product successfully deleted", 5000);
             this.getProducts(); // Update the products
         })
         .catch(error => { // Catch any errors
-            this.setToast(true, error.message + " " + error.response.data.message, 10000);
-        });
+            if(error.response.status === 401) {
+                this.handle401(error);
+            } else {
+                this.setToast(true, error.message + " " + error.response.data.message, 10000);
+            }
+        })
     }
 
     showModal = (product: any, type: any) => { // Open the modal with info about the product that was clicked
@@ -155,14 +159,18 @@ class ProductsTable extends Component <ProductsTableProps> {
         }
 
         // Send the payload to the API
-        axios.post(environment.apiUrl + '/updateProduct.php', payload)
+        axios.post(environment.apiUrl + '/updateProduct.php', payload, environment.config)
         .then(response => {
             this.setToast(true, "Product successfully updated", 5000);
             this.getProducts(); // Update the products
         })
         .catch(error => { // Catch any errors
-            this.setToast(true, error.message + ": " + error.response.data.message, 10000);
-        });
+            if(error.response.status === 401) {
+                this.handle401(error);
+            } else {
+                this.setToast(true, error.message + " " + error.response.data.message, 10000);
+            }
+        })
 
         this.setState({modalIsOpen: false, modalProduct: null, modalType: null}); // Close the modal
     }
@@ -181,9 +189,7 @@ class ProductsTable extends Component <ProductsTableProps> {
     }
 
     handle401 = (error: any) => {
-        console.log("401 Fired!");
         this.setState({alert401IsOpen: true, alert401Message: error.response.data.message});
-       
     }
 
     render() { // Render the component

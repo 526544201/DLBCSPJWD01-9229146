@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import axios from 'axios';
 import environment from '../environment';
-import { IonButton, IonCard, IonCardContent, IonCardHeader, IonContent, IonInput, IonToast } from '@ionic/react';
+import { IonAlert, IonButton, IonCard, IonCardContent, IonCardHeader, IonContent, IonInput, IonToast } from '@ionic/react';
 import "./Tables.css";
 
 interface InventoryProps {
@@ -15,11 +15,14 @@ class Inventory extends Component <InventoryProps> {
         toastIsOpen: false,
         toastMessage: "",
         toastDuration: 0,
-        requestId: ""
+        requestId: "",
+        alert401IsOpen: false,
+        alert401Message: ""
     }
 
     componentDidMount() { // Lifecycle method - When the component is mounted (on the screen)
         axios.get(environment.apiUrl + '/getProducts.php', { 
+            ...environment.config, // Spread Operator to merge the two objects and ensure that both are included in the request
             params: {
                 orderby: 'shelf_order'
             }
@@ -74,13 +77,17 @@ class Inventory extends Component <InventoryProps> {
             return;
         }
         const payload = this.createPayload();
-        axios.post(environment.apiUrl + '/bookStockchange.php', payload ) // Post the payload to the API via http request
+        axios.post(environment.apiUrl + '/bookStockchange.php', payload, environment.config ) // Post the payload to the API via http request
             .then(response => {
                 this.setToast(true, response.data.message, 10000);
             })
             .catch(error => { // Catch any errors
-                this.setToast(true, error.message + " " + error.response.data.message, 10000);
-            });
+                if(error.response.status === 401) {
+                    this.handle401(error);
+                } else {
+                    this.setToast(true, error.message + " " + error.response.data.message, 10000);
+                }
+            })
     }
 
     createPayload() {
@@ -96,6 +103,10 @@ class Inventory extends Component <InventoryProps> {
 
     setToast = (isOpen: boolean, message?: string, duration?: number) => {
         this.setState({ toastIsOpen: isOpen, toastMessage: message, toastDuration: duration });
+    }
+
+    handle401 = (error: any) => {
+        this.setState({alert401IsOpen: true, alert401Message: error.response.data.message});
     }
 
     render() { // Render the component
@@ -155,6 +166,18 @@ class Inventory extends Component <InventoryProps> {
                     message={this.state.toastMessage}
                     onDidDismiss={() => this.setToast(false)}
                     duration={this.state.toastDuration}
+                />
+                <IonAlert
+                    isOpen={this.state.alert401IsOpen}
+                    onDidDismiss={() => { 
+                        this.setState({alert401IsOpen: false});
+                        localStorage.clear;
+                        window.location.href = "/page/Login";
+                    }}
+                    header="Unauthorized Access"
+                    subHeader="Please log in again."
+                    message={this.state.alert401Message}
+                    buttons={['OK']}
                 />
             </div>
         

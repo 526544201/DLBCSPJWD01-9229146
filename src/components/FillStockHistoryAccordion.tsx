@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import axios from 'axios';
 import environment from '../environment';
-import { IonAccordion, IonAccordionGroup, IonContent, IonItem, IonLabel, IonToast } from '@ionic/react';
+import { IonAccordion, IonAccordionGroup, IonAlert, IonContent, IonItem, IonLabel, IonToast } from '@ionic/react';
 import "./Tables.css";
 
 interface FillAccordionProps {
@@ -15,11 +15,14 @@ class FillStockHistoryAccordion extends Component<FillAccordionProps>{
         stockChanges: [],
         toastIsOpen: false,
         toastMessage: "",
-        toastDuration: 0
+        toastDuration: 0,
+        alert401IsOpen: false,
+        alert401Message: ""
     }
 
     componentDidMount() { // Lifecycle method - When the component is mounted (on the screen)
         axios.get(environment.apiUrl + '/getStockhistoryDetails.php', {// Get the stocks from the API via http request
+            ...environment.config, // Spread Operator to merge the two objects and ensure that both are included in the request
             params: {
                 changeId: this.props.changeId,
                 type: this.props.type 
@@ -28,8 +31,12 @@ class FillStockHistoryAccordion extends Component<FillAccordionProps>{
                 this.setState({ stockChanges: response.data }); // Set the state of the stocks array to the response data
             })
             .catch(error => { // Catch any errors
-                this.setToast(true, error.message + ": " + error.response.data.message, 10000);
-            });
+                if(error.response.status === 401) {
+                    this.handle401(error);
+                } else {
+                    this.setToast(true, error.message + " " + error.response.data.message, 10000);
+                }
+            })
     }
 
     /**
@@ -40,6 +47,10 @@ class FillStockHistoryAccordion extends Component<FillAccordionProps>{
     */
     setToast(isOpen: boolean, message?: string, duration?: number) {
         this.setState({ toastIsOpen: isOpen, toastMessage: message, toastDuration: duration });
+    }
+
+    handle401 = (error: any) => {
+        this.setState({alert401IsOpen: true, alert401Message: error.response.data.message});
     }
 
     render() { // Render the component
@@ -74,6 +85,18 @@ class FillStockHistoryAccordion extends Component<FillAccordionProps>{
                         message={this.state.toastMessage}
                         duration={this.state.toastDuration}
                     />
+                    <IonAlert
+                        isOpen={this.state.alert401IsOpen}
+                        onDidDismiss={() => { 
+                            this.setState({alert401IsOpen: false});
+                            localStorage.clear;
+                            window.location.href = "/page/Login";
+                        }}
+                        header="Unauthorized Access"
+                        subHeader="Please log in again."
+                        message={this.state.alert401Message}
+                        buttons={['OK']}
+                />
             </div>
         )
     }
