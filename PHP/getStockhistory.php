@@ -13,7 +13,7 @@
     }
 
     require_once "util/tokenValidator.php";
-    
+
     if ($_SERVER['REQUEST_METHOD'] === 'GET') {
         // Check if the Authorization header is set
         if (isset($_SERVER['HTTP_X_AUTHORIZATION'])) {
@@ -70,11 +70,11 @@
 
     // Query the database
     if($type == "All"){      
-        $stmt = mysqli_prepare($conn, "SELECT * FROM stockchanges");
+        $stmt = mysqli_prepare($conn, "SELECT * FROM stockchanges ORDER BY date DESC");
 
     } else {
         // If type is set, get all stockchanges
-        $stmt = mysqli_prepare($conn, "SELECT * FROM stockchanges WHERE type = ?");
+        $stmt = mysqli_prepare($conn, "SELECT * FROM stockchanges WHERE type = ? ORDER BY date DESC");
         mysqli_stmt_bind_param($stmt, "s", $type);
     }
 

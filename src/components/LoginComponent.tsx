@@ -39,7 +39,7 @@ class LoginComponent extends Component {
             window.location.href = '/page/Products';
         })
         .catch(error => {
-            this.setToast(true, error.message + ": " + error.response.data.message, 10000);
+            this.setToast(true, error.message + ": " + error.response.data.message, 5000);
         });
     }  
 
@@ -107,6 +107,8 @@ class LoginComponent extends Component {
                     <IonContent className="ion-padding">
                         <p>Username: admin@admin.de</p>
                         <p>Password: 12345</p>
+                        <p>Username: user@user.de</p>
+                        <p>Password: abcdef</p>
                     </IonContent>
                 </IonPopover>
             </IonContent>

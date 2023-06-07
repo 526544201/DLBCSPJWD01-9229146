@@ -26,12 +26,15 @@ class ProductsTable extends Component <ProductsTableProps> {
         alertIsOpen: false,
         productToDelete: null as any,
         alert401IsOpen: false,
-        alert401Message: ""
+        alert401Message: "",
+        alert401subHeader: "",
+        alert401Route: "" as string
     }
 
     getProducts() {
         axios.get(environment.apiUrl + '/getProducts.php', environment.config) // Get the products from the API via http request
         .then(response => {
+            this.checkForUserAuthentication();
             this.setState({ products: response.data }); // Set the state of the products array to the response data
         })
         .catch(error => { // Catch any errors
@@ -87,6 +90,15 @@ class ProductsTable extends Component <ProductsTableProps> {
 
     componentDidMount() { // Lifecycle method - When the component is mounted (on the screen)
         this.getProducts();
+    }
+
+    checkForUserAuthentication() {
+        if(!localStorage.userId || !localStorage.token) {
+            this.setState({alert401IsOpen: true, alert401Message: "Please log in again.", alert401subHeader: "Unauthorized Access.", alert401Route: "/page/Login"});
+        }
+        if(localStorage.userId != `"1"`) {
+        this.setState({alert401IsOpen: true, alert401Message: "Redirecting", alert401subHeader: "Insufficient Permission.", alert401Route: "/page/Stock"});
+    }
     }
 
     openActionSheet = (product: any) => { // Open the action sheet when a product is clicked
@@ -188,13 +200,19 @@ class ProductsTable extends Component <ProductsTableProps> {
         this.setState({ toastIsOpen: isOpen, toastMessage: message, toastDuration: duration });
     }
 
-    handle401 = (error: any) => {
-        this.setState({alert401IsOpen: true, alert401Message: error.response.data.message});
+    handle401 = (error: any, subheader?: string) => {
+        this.setState({alert401IsOpen: true, alert401Message: error.response.data.message, alert401Route: "/page/Login"});
+        if(subheader) {
+            this.setState({alert401subHeader: subheader});
+        } else {
+            this.setState({alert401subHeader: "Please log in again."});
+        }
     }
 
     render() { // Render the component
         const { products, selectedProduct } = this.state;
         const { searchTerm } = this.props;
+        const { alert401Route } = this.state;
 
         const filteredProducts = products.filter((product: any) => {
             return product.name.toLowerCase().includes(searchTerm.toLowerCase()) || product.vendor_name.toLowerCase().match(searchTerm.toLowerCase());
@@ -461,12 +479,14 @@ class ProductsTable extends Component <ProductsTableProps> {
                 <IonAlert
                     isOpen={this.state.alert401IsOpen}
                     onDidDismiss={() => { 
+                        if(alert401Route == "/page/Login") {
+                            localStorage.clear();
+                        }
+                        window.location.href = alert401Route;
                         this.setState({alert401IsOpen: false});
-                        localStorage.clear;
-                        window.location.href = "/page/Login";
                     }}
                     header="Unauthorized Access"
-                    subHeader="Please log in again."
+                    subHeader={this.state.alert401subHeader}
                     message={this.state.alert401Message}
                     buttons={['OK']}
                 />

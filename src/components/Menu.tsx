@@ -13,7 +13,7 @@ import {
 } from '@ionic/react';
 
 import { useLocation } from 'react-router-dom';
-import { heartOutline, heartSharp, mailOutline, mailSharp,  fileTrayStackedOutline, clipboardOutline, cartOutline, clipboardSharp, cartSharp, fileTrayStackedSharp, beerOutline, beerSharp, keyOutline, keySharp, constructOutline, constructSharp } from 'ionicons/icons';
+import { fileTrayStackedOutline, clipboardOutline, cartOutline, clipboardSharp, cartSharp, fileTrayStackedSharp, beerOutline, beerSharp, keyOutline, keySharp } from 'ionicons/icons';
 import './Menu.css';
 
 interface AppPage {
@@ -64,7 +64,7 @@ const Menu: React.FC = () => {
     return (
       null
     )
-  } else {
+  } else if (localStorage.getItem('userId') == `"1"`) {
   return (
     <IonMenu contentId="main" type="overlay">
       <IonContent>
@@ -85,16 +85,55 @@ const Menu: React.FC = () => {
         </IonList>
         <IonItem>
           <IonButton fill="clear" onClick={ () => {
-            localStorage.removeItem('token');
-            localStorage.removeItem('tokenExpires');
-            localStorage.removeItem('username');
-            localStorage.removeItem('userId');
+            localStorage.clear();
             window.location.href = '/page/Login';
           }} >Log Out</IonButton>
         </IonItem>
       </IonContent>
     </IonMenu>
   );
+} else {
+  return (
+  <IonMenu contentId="main" type="overlay">
+  <IonContent>
+    <img src="../assets/images/iu_logo.png" />
+    <IonList id="inbox-list">
+      <IonListHeader>Java and Web Development</IonListHeader>
+      <IonNote>Hello User</IonNote>
+      {appPages.map((appPage, index) => {
+        if (appPage.title === 'Stock History' || appPage.title === 'Products') {
+          return null; // Skip rendering the page for users with userId other than 1
+        }
+        return (
+          <IonMenuToggle key={index} autoHide={false}>
+            <IonItem
+              className={location.pathname === appPage.url ? 'selected' : ''}
+              routerLink={appPage.url}
+              routerDirection="none"
+              lines="none"
+              detail={false}
+            >
+              <IonIcon aria-hidden="true" slot="start" ios={appPage.iosIcon} md={appPage.mdIcon} />
+              <IonLabel>{appPage.title}</IonLabel>
+            </IonItem>
+          </IonMenuToggle>
+        );
+      })}
+    </IonList>
+    <IonItem>
+      <IonButton
+        fill="clear"
+        onClick={() => {
+          localStorage.clear();
+          window.location.href = '/page/Login';
+        }}
+      >
+        Log Out
+      </IonButton>
+    </IonItem>
+  </IonContent>
+</IonMenu>
+)
 }
 }
 

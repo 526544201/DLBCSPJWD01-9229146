@@ -96,6 +96,7 @@ const Stockmanagement: React.FC = () => {
               <IonDatetimeButton 
                 datetime='datetime'
                 id="dateTimeButton"
+                disabled={selectedTab === "inventory" ? true : false} // Disable the button if the selected tab is inventory
               ></IonDatetimeButton>
             </IonButtons>
           </IonToolbar>
