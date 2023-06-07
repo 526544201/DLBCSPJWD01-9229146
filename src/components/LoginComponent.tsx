@@ -1,9 +1,11 @@
-import React, { Component } from 'react';
+import { IonContent, IonPopover, IonToast } from '@ionic/react';
 import axios from 'axios';
+import React, { Component } from 'react';
 import environment from '../environment';
-import { IonButton, IonContent, IonInput, IonToast } from '@ionic/react';
+import './LoginComponent.css';
 
 class LoginComponent extends Component {
+
     state = { // Holds data in the component
         email: '',
         password: '',
@@ -34,7 +36,7 @@ class LoginComponent extends Component {
             localStorage.setItem('token', JSON.stringify(response.data.token));
             localStorage.setItem('tokenExpires', JSON.stringify(response.data.tokenExpires));
             // Redirect to the home page
-            window.location.href = '/Page/Products';
+            window.location.href = '/page/Products';
         })
         .catch(error => {
             this.setToast(true, error.message + ": " + error.response.data.message, 10000);
@@ -45,34 +47,70 @@ class LoginComponent extends Component {
         this.setState({ toastIsOpen: isOpen, toastMessage: message, toastDuration: duration });
     }
 
-    render() { // Render the component
-        return ( // "Normal HTML" to be rendered
-            <IonContent className="ion-padding">  { /* Only one element can be returned, so we wrap everything in a IonContent. This IonContent holds the table */ }
-                <form onSubmit={this.handleSubmit}>
-                    <IonInput
-                        type="email"
-                        placeholder="Email"
-                        value={this.state.email}
-                        onIonChange={this.handleEmailChange}
-                        required
-                    /> 
-                    <IonInput
-                        type="password"
-                        placeholder="Password"
-                        value={this.state.password}
-                        onIonChange={this.handlePasswordChange}
-                        required
-                    />
-                    <IonButton type="submit">Log In</IonButton>
-                </form>
+    checkForToken() {
+        if (localStorage.getItem("token") != null) {
+            // Validate the token. If correct, redirect to the products page, if not, delete the token and render page as normal
+        }
+    }
+
+    render() {
+        this.checkForToken();
+        return (
+            <IonContent>
+                <div className="container">     
+                    <form className="login-form" onSubmit={this.handleSubmit}>
+                    <img src="../assets/images/iu_logo.png" className="logo" />
+                    <h2>Java and Web Development</h2>
+                    <div className="form-group">
+                        <label htmlFor="username">Username</label>
+                        <input 
+                            type="text" 
+                            id="username" 
+                            name="username" 
+                            value={this.state.email}
+                            onChange={this.handleEmailChange} 
+                            required 
+                        />
+                    </div>
+                    <div className="form-group">
+                        <label htmlFor="password">Password</label>
+                        <input 
+                            type="password" 
+                            id="password" 
+                            name="password" 
+                            value={this.state.password}
+                            onChange={this.handlePasswordChange}                          
+                            required 
+                        />
+                    </div>
+                    <div className="form-group">
+                        <input type="submit" value="Login" />
+                        <p className="message">
+                        Forgot your password? <span id="click-trigger" className="link">View</span>
+                        </p>
+                        <p className="message">
+                            Already logged in? <a href="./page/Products">Continue</a> {/* DEBUG: Automate & delete this */}
+                        </p>
+                    </div>
+                    </form>
+                </div>
                 <IonToast
                     isOpen={this.state.toastIsOpen}
                     message={this.state.toastMessage}
                     onDidDismiss={() => this.setToast(false)}
                     duration={this.state.toastDuration}
                 />
+                <IonPopover
+                    trigger="click-trigger"
+                    triggerAction="click" 
+                >
+                    <IonContent className="ion-padding">
+                        <p>Username: admin@admin.de</p>
+                        <p>Password: 12345</p>
+                    </IonContent>
+                </IonPopover>
             </IonContent>
-        )
+        );
     }
 }
 
