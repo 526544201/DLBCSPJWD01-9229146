@@ -46,7 +46,7 @@
     if (mysqli_num_rows($result) == 0) {
         // Send status code 401 and exit
         http_response_code(401);
-        echo json_encode(array('message' => 'User does not exist'));
+        echo json_encode(array('message' => 'Incorrect user/password'));
         exit();
     }
 
@@ -57,6 +57,7 @@
     if (!password_verify($payload['password'], $user['password'])) {
         // Send status code 401 and exit
         http_response_code(401);
+        echo json_encode(array('message' => 'Incorrect user/password'));
         exit();
     }
 

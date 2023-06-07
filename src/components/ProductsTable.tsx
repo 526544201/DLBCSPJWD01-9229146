@@ -24,46 +24,64 @@ class ProductsTable extends Component <ProductsTableProps> {
         toastDuration: 0,
         toastMessage: "",
         alertIsOpen: false,
-        productToDelete: null as any
+        productToDelete: null as any,
+        alert401IsOpen: false,
+        alert401Message: ""
     }
 
     getProducts() {
-        axios.get(environment.apiUrl + '/getProducts.php') // Get the products from the API via http request
+        axios.get(environment.apiUrl + '/getProducts.php', environment.config) // Get the products from the API via http request
         .then(response => {
             this.setState({ products: response.data }); // Set the state of the products array to the response data
         })
         .catch(error => { // Catch any errors
-            this.setToast(true, error.message + " " + error.response.data.message, 10000);
+            if(error.response.status === 401) {
+                this.handle401(error);
+            } else {
+                this.setToast(true, error.message + " " + error.response.data.message, 10000);
+            }
         })
     }
 
     getVendors() {
-        axios.get(environment.apiUrl + '/getVendors.php') // Get the products from the API via http request
+        axios.get(environment.apiUrl + '/getVendors.php', environment.config) // Get the products from the API via http request
         .then(response => {
             this.setState({ vendors: response.data }); // Set the state of the products array to the response data
         })
         .catch(error => { // Catch any errors
-            this.setToast(true, error.message + " " + error.response.data.message, 10000);
+            if(error.response.status === 401) {
+                this.handle401(error);
+            } else {
+                this.setToast(true, error.message + " " + error.response.data.message, 10000);
+            }
         })
     }
 
     getCategories() {
-        axios.get(environment.apiUrl + '/getCategories.php') // Get the products from the API via http request
+        axios.get(environment.apiUrl + '/getCategories.php', environment.config) // Get the products from the API via http request
         .then(response => {
             this.setState({ categories: response.data }); // Set the state of the products array to the response data
         })
         .catch(error => { // Catch any errors
-            this.setToast(true, error.message + " " + error.response.data.message, 10000);
+            if(error.response.status === 401) {
+                this.handle401(error);
+            } else {
+                this.setToast(true, error.message + " " + error.response.data.message, 10000);
+            }
         })
     }
 
     getShelves() {
-        axios.get(environment.apiUrl + '/getShelves.php') // Get the products from the API via http request
+        axios.get(environment.apiUrl + '/getShelves.php', environment.config) // Get the products from the API via http request
         .then(response => {
             this.setState({ shelves: response.data }); // Set the state of the products array to the response data
         })
         .catch(error => { // Catch any errors
-            this.setToast(true, error.message + " " + error.response.data.message, 10000);
+            if(error.response.status === 401) {
+                this.handle401(error);
+            } else {
+                this.setToast(true, error.message + " " + error.response.data.message, 10000);
+            }
         })
     }
 
@@ -76,7 +94,6 @@ class ProductsTable extends Component <ProductsTableProps> {
     };
 
     deleteProduct = (product: any) => { // Delete the product that was clicked
-        console.log('Delete clicked on ' + product.name); // DEBUG
         axios.post(environment.apiUrl + '/deleteProduct.php', {id: product.id}) // Send the id of the product to the API via http request
         .then(response => {
             this.setToast(true, "Product successfully deleted", 5000);
@@ -88,7 +105,6 @@ class ProductsTable extends Component <ProductsTableProps> {
     }
 
     showModal = (product: any, type: any) => { // Open the modal with info about the product that was clicked
-        console.log('Edit clicked on ' + product.name);  // DEBUG
         //For population of the form, get the vendors, categories and shelves
         this.getVendors();
         this.getCategories();
@@ -164,6 +180,11 @@ class ProductsTable extends Component <ProductsTableProps> {
         this.setState({ toastIsOpen: isOpen, toastMessage: message, toastDuration: duration });
     }
 
+    handle401 = (error: any) => {
+        console.log("401 Fired!");
+        this.setState({alert401IsOpen: true, alert401Message: error.response.data.message});
+       
+    }
 
     render() { // Render the component
         const { products, selectedProduct } = this.state;
@@ -346,7 +367,7 @@ class ProductsTable extends Component <ProductsTableProps> {
                                 <IonFooter>
                                     <IonToolbar>
                                         <IonButtons slot="start">
-                                            <IonButton onClick={() => {this.setState({modalIsOpen: false, modalProduct: null})}}>Cancle</IonButton>
+                                            <IonButton onClick={() => {this.setState({modalIsOpen: false, modalProduct: null})}}>Cancel</IonButton>
                                         </IonButtons>
                                         <IonButtons slot="end">
                                             <IonButton type="submit">Submit</IonButton>
@@ -429,6 +450,19 @@ class ProductsTable extends Component <ProductsTableProps> {
                             handler: () => this.deleteProduct(this.state.productToDelete)
                         }
                     ]}
+                />
+
+                <IonAlert
+                    isOpen={this.state.alert401IsOpen}
+                    onDidDismiss={() => { 
+                        this.setState({alert401IsOpen: false});
+                        localStorage.clear;
+                        window.location.href = "/page/Login";
+                    }}
+                    header="Unauthorized Access"
+                    subHeader="Please log in again."
+                    message={this.state.alert401Message}
+                    buttons={['OK']}
                 />
             </IonContent>
         )
