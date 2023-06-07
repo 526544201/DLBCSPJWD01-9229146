@@ -73,7 +73,9 @@ class FillStockHistoryAccordion extends Component<FillAccordionProps>{
                                 <tr key={index++}>
                                     <td>{stockChange.name}</td>
                                     <td>{stockChange.old_Stock}</td>
-                                    <td>{stockChange.quantity}</td>
+                                    <td>{this.props.type === "Outflow" ? "- " : "+ "}
+                                        {stockChange.quantity}
+                                        </td>
                                     <td>{stockChange.new_Stock}</td>
                                 </tr>
                             ))}

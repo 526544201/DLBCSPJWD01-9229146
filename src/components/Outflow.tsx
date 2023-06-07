@@ -107,7 +107,24 @@ class Outflow extends Component <OutflowProps> {
             this.setToast(true, "No products changed!", 3000);
             return;
         }
+        // Check if enough stock is available
+        const changedProducts: {productId: number, quantity: number}[] = this.state.changedProducts;
+        const products: any[] = this.state.products;
+        try{
+        products.map(product => { // Iterate through the products array
+            const changedProduct = changedProducts.find(changedProduct => changedProduct.productId === product.id); // Find the corresponding changed product
+            // if changed product quantity is lower than stuck, return error, else continue
+            if(changedProduct && changedProduct.quantity > product.stock) { // If the changed product quantity is higher than the stock
+                // Get the product name from the products array
+                const productName = products.find(product => product.id === changedProduct.productId).name;
 
+                this.setToast(true, `Not enough stock for ${productName} available!`, 5000);
+                throw new Error(`Not enough stock for ${productName} available!`);
+            }
+        });} catch {
+            return;
+        }
+        
         const payload = this.createPayload();
         axios.post(environment.apiUrl + '/bookStockchange.php', payload, environment.config ) // Post the payload to the API via http request
             .then(response => {
