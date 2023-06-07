@@ -153,26 +153,6 @@ class Inflow extends Component <InflowProps> {
         console.log(this.state.changedProducts);
         console.log("Payload:");
         console.log(this.createPayload());
-        const timeButton = document.getElementById("tester");
-        if (timeButton !== null) {
-            // Find the last child of the timeButton
-            const shadowRoot = timeButton.shadowRoot;
-            if (shadowRoot !== null) {
-                console.log("Shadowroot is not null!");
-                const time_Button = shadowRoot.querySelector("#time-button") as HTMLButtonElement;
-                if (time_Button !== null) {
-                    console.log("Timebutton is not null!");
-                    time_Button.style.display = "none";
-                } else {
-                    console.log("Timebutton is null!");
-                }
-            } else {
-                console.log("Shadowroot is null!");
-            }
-            console.log("Tester is not null!");
-        } else {
-            console.log("Tester is null!");
-        }
     }
 
     /**

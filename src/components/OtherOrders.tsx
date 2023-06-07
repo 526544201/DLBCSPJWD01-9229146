@@ -31,15 +31,17 @@ class OtherOrders extends Component {
     }
 
     groupByVendor(products: any) {
-        const groupedProducts = products.reduce((grouped: any, product: any) => { // Iterate through the products array, accumulating the products into groups based on the callback function
-            const vendor = product.vendor_name; // Get the vendor id of the current product
+        const groupedProducts: { [vendorId: string]: { products: any[]; vendorLogo: string, vendorName: string} } = products.reduce((grouped: any, product: any) => { // Iterate through the products array, accumulating the products into groups based on the callback function
+            const vendor = product.vendor_id; // Get the vendor id of the current product
+            const vendorLogo = product.vendor_logo;
+            const vendorName = product.vendor_name;
             if (!grouped[vendor]) { // If the vendor id doesn't exist in the groups object
-                grouped[vendor] = []; // Create a new array for the vendor id
+                grouped[vendor] = { products: [], vendorLogo: vendorLogo, vendorName: vendorName };
             }
-            grouped[vendor].push(product); // Push the product to the array
+            grouped[vendor].products.push(product); // Push the product to the products array
             return grouped;
         }, {});
-        return groupedProducts;       
+        return groupedProducts;      
     }
 
     setToast(isOpen: boolean, message?: string, duration?: number) {
@@ -54,18 +56,15 @@ class OtherOrders extends Component {
         const { products } = this.state;
         const groupedProducts = this.groupByVendor(products);
 
-        if (groupedProducts.length === 0) return ( // If there are no products
-            null // TODO: Add a loading indicator
-        )
+        // TODO: Add check for empty products array!
 
-        const vendorLogo = products.length > 0 ? products[0].vendor_logo : ""; // Get the vendor logo from the first product in the array
         return ( // "Normal HTML" to be rendered
             <IonContent className="ion-padding">
                 <IonAccordionGroup>
-                    {Object.entries(groupedProducts).map(([vendorName, products]) => ( // Typescript shenanigans / Object.entries returns an array of key-value pairs. 
+                    {Object.entries(groupedProducts).map(([vendorId, { products, vendorLogo, vendorName}]) => ( // Typescript shenanigans / Object.entries returns an array of key-value pairs. 
                         // The key is the vendor id, and the value is the array of products. For each key-value pair, create an IonAccordion
                         // Get the vendor logo from the first product in the array
-                        <IonAccordion key={vendorName}> 
+                        <IonAccordion key={vendorId}> 
                             <IonItem slot="header" color="light">
                                 <IonLabel><img src={vendorLogo} className="middle-logo" /> {vendorName} </IonLabel>
                             </IonItem>

@@ -64,15 +64,16 @@ class Outflow extends Component <OutflowProps> {
     }
 
     groupByCategory(products: any) {
-        const groupedProducts = products.reduce((grouped: any, product: any) => { // Iterate through the products array, accumulating the products into groups based on the callback function
-            const category = product.category_name; // Get the category name of the current product
-            if (!grouped[category]) { // If the category name doesn't exist in the groups object
-                grouped[category] = []; // Create a new array for the category name
+        const groupedProducts: { [categoryId: string]: { products: any[]; categoryName: string} } = products.reduce((grouped: any, product: any) => { // Iterate through the products array, accumulating the products into groups based on the callback function
+            const category = product.category_id; // Get the category id of the current product
+            const categoryName = product.category_name;
+            if (!grouped[category]) { // If the category id doesn't exist in the groups object
+                grouped[category] = { products: [], categoryName: categoryName };
             }
-            grouped[category].push(product); // Push the product to the array
+            grouped[category].products.push(product); // Push the product to the products array
             return grouped;
         }, {});
-        return groupedProducts;       
+        return groupedProducts;  
     }
 
     handleInputChange = (event: any, productId: any) => {
@@ -151,7 +152,7 @@ class Outflow extends Component <OutflowProps> {
         return ( // "Normal HTML" to be rendered        
             <div>  { /* Only one element can be returned, so we wrap everything in a div. This div holds the table */ }
                 <form onSubmit={this.handleSubmit}>
-                {Object.entries(groupedProducts).map(([categoryName, products]) => { // Object.entries returns an array of key-value pairs. 
+                {Object.entries(groupedProducts).map(([categoryId, {products, categoryName}]) => { // Object.entries returns an array of key-value pairs. 
                     // The key is the category id, and the value is the array of products. For each key-value pair, create an Table with the corresponding products
                     const filteredProducts = (products as any).filter((product: any) =>
                         product.name.toLowerCase().includes(searchTerm.toLowerCase()));
@@ -159,7 +160,7 @@ class Outflow extends Component <OutflowProps> {
                     if (filteredProducts.length === 0) return null; // If there are no products, don't display the table
 
                     return(
-                    <div key={categoryName}>
+                    <div key={categoryId}>
                         <IonCard>
                             <div className="bannerDiv">
                                 <IonCardHeader className="vendorHeader">{categoryName}</IonCardHeader>

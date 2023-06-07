@@ -50,12 +50,13 @@ class Inventory extends Component <InventoryProps> {
     }
 
     groupByShelf(products: any) {
-        const groupedProducts = products.reduce((grouped: any, product: any) => { // Iterate through the products array, accumulating the products into groups based on the callback function
-            const shelf = product.shelf_name; // Get the shelf name of the current product
+        const groupedProducts: { [shelfId: string]: { products: any[]; shelfName: string} } = products.reduce((grouped: any, product: any) => { // Iterate through the products array, accumulating the products into groups based on the callback function
+            const shelf = product.shelf_id; // Get the shelf id of the current product
+            const shelfName = product.shelf_name;
             if (!grouped[shelf]) { // If the shelf name doesn't exist in the groups object
-                grouped[shelf] = []; // Create a new array for the shelf name
+                grouped[shelf] = { products: [], shelfName: shelfName };
             }
-            grouped[shelf].push(product); // Push the product to the array
+            grouped[shelf].products.push(product); // Push the product to the products array
             return grouped;
         }, {});
         return groupedProducts;       
@@ -117,9 +118,9 @@ class Inventory extends Component <InventoryProps> {
         
             <div>  { /* Only one element can be returned, so we wrap everything in a div. This div holds the table */ }
                 <form onSubmit={this.handleSubmit}>
-                {Object.entries(groupedProducts).map(([shelfName, products]) => ( // Object.entries returns an array of key-value pairs. 
+                {Object.entries(groupedProducts).map(([shelfId, {products, shelfName}]) => ( // Object.entries returns an array of key-value pairs. 
                     // The key is the category id, and the value is the array of products. For each key-value pair, create an Table with the corresponding products
-                    <div key={shelfName}>
+                    <div key={shelfId}>
                         <IonCard>
                             <div className="bannerDiv">
                                 <IonCardHeader className="vendorHeader">{shelfName}</IonCardHeader>
