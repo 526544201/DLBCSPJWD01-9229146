@@ -1,5 +1,5 @@
-import React, { useState } from 'react';
-import { IonButtons, IonContent, IonDatetime, IonDatetimeButton, IonHeader, IonLabel, IonMenuButton, IonModal, IonPage, IonSearchbar, IonSegment, IonSegmentButton, IonTitle, IonToolbar } from '@ionic/react';
+import React, { useEffect, useState } from 'react';
+import { IonButton, IonButtons, IonContent, IonDatetime, IonDatetimeButton, IonHeader, IonLabel, IonMenuButton, IonModal, IonPage, IonSearchbar, IonSegment, IonSegmentButton, IonTitle, IonToolbar } from '@ionic/react';
 import Inflow from '../components/Inflow';
 import Outflow from '../components/Outflow';
 import Inventory from '../components/Inventory';
@@ -43,6 +43,45 @@ const Stockmanagement: React.FC = () => {
       setSelectedDate(event.detail.value); // Set the selectedDate state to the value of the clicked date
     };
 
+    const Debugging = () => {
+      const timeButton = document.getElementById('tester');
+      if(timeButton) {
+        console.log("Timebutton found");
+      } else {
+        console.log("Timebutton not found");
+      }
+    }
+
+    useEffect(() => {
+      const observer = new MutationObserver((mutationsList) => {
+        for (const mutation of mutationsList) {
+          if (mutation.type === 'childList') {
+            const timeButton = document.getElementById("dateTimeButton");
+            console.log("Tester 1");
+            if (timeButton !== null) {
+              const shadowRoot = timeButton.shadowRoot;
+              console.log("Tester 2");
+              if (shadowRoot !== null) {
+                const time_Button = shadowRoot.querySelector("#time-button") as HTMLButtonElement;
+                console.log("Tester 3");
+                if (time_Button !== null) {
+                  time_Button.style.display = "none";
+                  console.log("Tester 4");
+                  observer.disconnect();
+                }
+              }
+            }
+          }
+        }
+      });
+  
+      observer.observe(document, { childList: true, subtree: true });
+  
+      return () => {
+        observer.disconnect();
+      };
+    }, []);
+
     return (
       <IonPage>
         <IonHeader>
@@ -51,6 +90,9 @@ const Stockmanagement: React.FC = () => {
               <IonMenuButton />
             </IonButtons>
             <IonTitle>Stock Management</IonTitle>
+            <IonButtons slot="end" >
+              <IonButton onClick={Debugging}>DEBUG</IonButton>
+            </IonButtons>
           </IonToolbar>
           <IonToolbar>
               <IonSegment value={selectedTab} onIonChange={handleTabChange}>
@@ -64,17 +106,16 @@ const Stockmanagement: React.FC = () => {
                       <IonLabel>Inventory</IonLabel>
                   </IonSegmentButton>
               </IonSegment>
-          </IonToolbar>
-          {selectedTab === "inflow" || selectedTab === "outflow" ? (
           <IonToolbar>
             <IonSearchbar debounce={1000} onIonInput={handleInput}showClearButton="always" placeholder="Searchbar" ></IonSearchbar>
             <IonButtons slot="end">
               <IonDatetimeButton 
                 datetime='datetime'
+                id="dateTimeButton"
               ></IonDatetimeButton>
             </IonButtons>
           </IonToolbar>
-          ) : null}
+          </IonToolbar>
         </IonHeader>
         <IonContent fullscreen>
           <IonHeader collapse="condense">
@@ -95,7 +136,7 @@ const Stockmanagement: React.FC = () => {
             ></IonDatetime>
           </IonModal>
         </IonContent>
-      </IonPage>
+      </IonPage>  
     );
 };
 
