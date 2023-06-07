@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import axios from 'axios';
 import environment from '../environment';
-import { IonAlert, IonButton, IonCard, IonCardContent, IonCardHeader, IonContent, IonInput, IonToast } from '@ionic/react';
+import { IonAlert, IonButton, IonCard, IonCardContent, IonCardHeader, IonContent, IonInput, IonRefresher, IonRefresherContent, IonToast, RefresherEventDetail } from '@ionic/react';
 import "./Tables.css";
 
 interface InventoryProps {
@@ -21,6 +21,10 @@ class Inventory extends Component <InventoryProps> {
     }
 
     componentDidMount() { // Lifecycle method - When the component is mounted (on the screen)
+        this.getProducts();
+    }
+
+    getProducts() {
         axios.get(environment.apiUrl + '/getProducts.php', { 
             ...environment.config, // Spread Operator to merge the two objects and ensure that both are included in the request
             params: {
@@ -110,6 +114,11 @@ class Inventory extends Component <InventoryProps> {
         this.setState({alert401IsOpen: true, alert401Message: error.response.data.message});
     }
 
+    handleRefresh = (event: CustomEvent<RefresherEventDetail>) => {
+        this.getProducts();
+        event.detail.complete();
+    }
+
     render() { // Render the component
         const { products } = this.state;
         const groupedProducts = this.groupByShelf(products);
@@ -180,6 +189,9 @@ class Inventory extends Component <InventoryProps> {
                     message={this.state.alert401Message}
                     buttons={['OK']}
                 />
+                <IonRefresher slot="fixed" onIonRefresh={this.handleRefresh}>
+                    <IonRefresherContent></IonRefresherContent>
+                </IonRefresher>
             </div>
         
         )

@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import axios from 'axios';
 import environment from '../environment';
-import { IonAccordion, IonAccordionGroup, IonAlert, IonContent, IonItem, IonLabel, IonToast } from '@ionic/react';
+import { IonAccordion, IonAccordionGroup, IonAlert, IonContent, IonItem, IonLabel, IonRefresher, IonRefresherContent, IonToast, RefresherEventDetail } from '@ionic/react';
 import FillStockHistoryAccordion from './FillStockHistoryAccordion';
 
 interface changeHistoryProps {
@@ -19,6 +19,10 @@ class ChangeHistory extends Component<changeHistoryProps> {
     }
 
     componentDidMount() { // Lifecycle method - When the component is mounted (on the screen)
+        this.getStocks();
+    }
+
+    getStocks() {
         axios.get(environment.apiUrl + '/getStockhistory.php', {
             ...environment.config, // Spread Operator to merge the two objects and ensure that both are included in the request
             params: {
@@ -49,6 +53,11 @@ class ChangeHistory extends Component<changeHistoryProps> {
 
     handle401 = (error: any) => {
         this.setState({alert401IsOpen: true, alert401Message: error.response.data.message});
+    }
+
+    handleRefresh = (event: CustomEvent<RefresherEventDetail>) => {
+        this.getStocks();
+        event.detail.complete();
     }
 
     render() { // Render the component
@@ -84,6 +93,9 @@ class ChangeHistory extends Component<changeHistoryProps> {
                     message={this.state.alert401Message}
                     buttons={['OK']}
                 />
+                <IonRefresher slot="fixed" onIonRefresh={this.handleRefresh}>
+                    <IonRefresherContent></IonRefresherContent>
+                </IonRefresher>
             </IonContent>
         )
     }

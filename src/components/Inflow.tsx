@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import axios from 'axios';
 import environment from '../environment';
-import { IonAlert, IonButton, IonCard, IonCardContent, IonCardHeader, IonCardSubtitle, IonContent, IonInput, IonToast } from '@ionic/react';
+import { IonAlert, IonButton, IonCard, IonCardContent, IonCardHeader, IonCardSubtitle, IonContent, IonInput, IonRefresher, IonRefresherContent, IonToast, RefresherEventDetail } from '@ionic/react';
 import "./Tables.css";
 
 interface InflowProps { // Create an interface for the props that are passed to this component - Otherwise TypeScript will complain
@@ -25,6 +25,16 @@ class Inflow extends Component <InflowProps> {
     }
 
     componentDidMount() { // Lifecycle method - When the component is mounted (on the screen)
+        this.getProducts();
+    }
+
+    componentDidUpdate(prevProps: any, prevState: any) { // Lifecycle method - When the component is updated
+        if (prevState.changedProducts.length !== this.state.changedProducts.length) { // If the changedProducts array has changed
+            this.setState({requestId: this.createRequestId()}); // Create a new request id
+        }
+    }
+
+    getProducts() {
         axios.get(environment.apiUrl + '/getProducts.php', {
             ...environment.config, 
             params: { 
@@ -48,13 +58,8 @@ class Inflow extends Component <InflowProps> {
                     this.setToast(true, error.message + " " + error.response.data.message, 10000);
                 }
             })
-       }
-
-    componentDidUpdate(prevProps: any, prevState: any) { // Lifecycle method - When the component is updated
-        if (prevState.changedProducts.length !== this.state.changedProducts.length) { // If the changedProducts array has changed
-            this.setState({requestId: this.createRequestId()}); // Create a new request id
-        }
     }
+    
     /**
         * Generates a random request ID. Gets called when the user changes the stock of a product.
         * @returns {string} The randomly generated request ID.
@@ -186,6 +191,11 @@ class Inflow extends Component <InflowProps> {
         this.setState({alert401IsOpen: true, alert401Message: error.response.data.message});
     }
 
+    handleRefresh = (event: CustomEvent<RefresherEventDetail>) => {
+        this.getProducts();
+        event.detail.complete();
+    }
+
     render() { // Render the component
         const { products, productChanges } = this.state;
         const { searchTerm } = this.props;
@@ -267,6 +277,9 @@ class Inflow extends Component <InflowProps> {
                     message={this.state.alert401Message}
                     buttons={['OK']}
                 />
+                <IonRefresher slot="fixed" onIonRefresh={this.handleRefresh}>
+                    <IonRefresherContent></IonRefresherContent>
+                </IonRefresher>
             </div>
         
         )

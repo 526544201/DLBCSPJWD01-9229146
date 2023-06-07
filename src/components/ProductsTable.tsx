@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import axios from 'axios';
 import environment from '../environment';
-import { IonActionSheet, IonButton, IonButtons, IonContent, IonHeader, IonModal, IonTitle, IonToolbar, IonItem, IonLabel, IonList, IonListHeader, IonInput, IonFooter, IonSelect, IonSelectOption, IonFab, IonFabButton, IonIcon, IonToast, useIonAlert, IonAlert } from '@ionic/react';
+import { IonActionSheet, IonButton, IonButtons, IonContent, IonHeader, IonModal, IonTitle, IonToolbar, IonItem, IonLabel, IonList, IonListHeader, IonInput, IonFooter, IonSelect, IonSelectOption, IonFab, IonFabButton, IonIcon, IonToast, useIonAlert, IonAlert, IonRefresher, IonRefresherContent, RefresherEventDetail } from '@ionic/react';
 
 import './Tables.css';
 import { add } from 'ionicons/icons';
@@ -207,6 +207,11 @@ class ProductsTable extends Component <ProductsTableProps> {
         } else {
             this.setState({alert401subHeader: "Please log in again."});
         }
+    }
+
+    handleRefresh = (event: CustomEvent<RefresherEventDetail>) => {
+        this.getProducts();
+        event.detail.complete();
     }
 
     render() { // Render the component
@@ -490,6 +495,11 @@ class ProductsTable extends Component <ProductsTableProps> {
                     message={this.state.alert401Message}
                     buttons={['OK']}
                 />
+
+                <IonRefresher slot="fixed" onIonRefresh={this.handleRefresh}>
+                    <IonRefresherContent></IonRefresherContent>
+                </IonRefresher>
+
             </IonContent>
         )
     }

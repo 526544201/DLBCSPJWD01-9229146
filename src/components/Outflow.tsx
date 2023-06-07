@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import axios from 'axios';
 import environment from '../environment';
-import { IonAlert, IonButton, IonCard, IonCardContent, IonCardHeader, IonContent, IonInput, IonToast } from '@ionic/react';
+import { IonAlert, IonButton, IonCard, IonCardContent, IonCardHeader, IonContent, IonInput, IonRefresher, IonRefresherContent, IonToast, RefresherEventDetail } from '@ionic/react';
 import "./Tables.css";
 
 interface OutflowProps { // Create an interface for the props that are passed to this component - Otherwise TypeScript will complain
@@ -25,6 +25,16 @@ class Outflow extends Component <OutflowProps> {
     }
 
     componentDidMount() { // Lifecycle method - When the component is mounted (on the screen)
+        this.getProducts();
+    }
+
+    componentDidUpdate(prevProps: any, prevState: any) { // Lifecycle method - When the component is updated
+        if (prevState.changedProducts.length !== this.state.changedProducts.length) { // If the changedProducts array has changed
+            this.setState({requestId: this.createRequestId()}); // Create a new request id
+        }
+    }
+
+    getProducts() {
         axios.get(environment.apiUrl + '/getProducts.php', environment.config) // Get the products from the API via http request
             .then(response => {
                 this.setState({ products: response.data }); // Set the state of the products array to the response data
@@ -45,13 +55,7 @@ class Outflow extends Component <OutflowProps> {
                 }
             })
     }
-
-    componentDidUpdate(prevProps: any, prevState: any) { // Lifecycle method - When the component is updated
-        if (prevState.changedProducts.length !== this.state.changedProducts.length) { // If the changedProducts array has changed
-            this.setState({requestId: this.createRequestId()}); // Create a new request id
-        }
-    }
-
+    
     createRequestId() {
         const characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789@#$%&*(){}[]<>?/-_+=';
         let result = '';
@@ -161,6 +165,11 @@ class Outflow extends Component <OutflowProps> {
         this.setState({alert401IsOpen: true, alert401Message: error.response.data.message});
     }
 
+    handleRefresh = (event: CustomEvent<RefresherEventDetail>) => {
+        this.getProducts();
+        event.detail.complete();
+    }
+
     render() { // Render the component
         const { products, productChanges } = this.state;
         const { searchTerm } = this.props;
@@ -239,6 +248,10 @@ class Outflow extends Component <OutflowProps> {
                     message={this.state.alert401Message}
                     buttons={['OK']}
                 />
+                <IonRefresher slot="fixed" onIonRefresh={this.handleRefresh}>
+                    <IonRefresherContent></IonRefresherContent>
+                </IonRefresher>
+                
             </div>
         
         )

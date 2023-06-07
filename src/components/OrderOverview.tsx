@@ -3,7 +3,7 @@ import PropTypes from 'prop-types';
 import axios from 'axios';
 import environment from '../environment';
 import "./Tables.css";
-import { IonAlert, IonCard, IonCardContent, IonContent, IonToast } from '@ionic/react';
+import { IonAlert, IonCard, IonCardContent, IonContent, IonRefresher, IonRefresherContent, IonToast, RefresherEventDetail } from '@ionic/react';
 
 interface OrderOverviewProps { // Create an interface for the props that are passed to this component - Otherwise TypeScript will complain
     vendorId: string 
@@ -20,7 +20,11 @@ class OrderOverview extends Component<OrderOverviewProps> {
         alert401Message: ""
     }
 
-    componentDidMount() { // Lifecycle method - When the component is mounted (on the screen)
+    componentDidMount() { // Lifecycle method - When the component is mounted (on the screen)    
+        this.getOrders();
+    }
+
+    getOrders() {
         const vendorId = this.props.vendorId; 
         axios.get(environment.apiUrl + '/getProductsToOrder.php',  {
             ...environment.config, // Spread Operator to merge the two objects and ensure that both are included in the request
@@ -47,6 +51,11 @@ class OrderOverview extends Component<OrderOverviewProps> {
 
     handle401 = (error: any) => {
         this.setState({alert401IsOpen: true, alert401Message: error.response.data.message});
+    }
+
+    handleRefresh = (event: CustomEvent<RefresherEventDetail>) => {
+        this.getOrders();
+        event.detail.complete();
     }
 
     render() { // Render the component
@@ -103,6 +112,9 @@ class OrderOverview extends Component<OrderOverviewProps> {
                     message={this.state.alert401Message}
                     buttons={['OK']}
                 />
+                <IonRefresher slot="fixed" onIonRefresh={this.handleRefresh}>
+                    <IonRefresherContent></IonRefresherContent>
+                </IonRefresher>
             </IonContent>
         )
     }

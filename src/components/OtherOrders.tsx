@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import axios from 'axios';
 import environment from '../environment';
-import { IonAccordion, IonAccordionGroup, IonAlert, IonContent, IonItem, IonLabel, IonToast } from '@ionic/react';
+import { IonAccordion, IonAccordionGroup, IonAlert, IonContent, IonItem, IonLabel, IonRefresher, IonRefresherContent, IonToast, RefresherEventDetail } from '@ionic/react';
 import "./Tables.css";
 
 class OtherOrders extends Component {
@@ -17,6 +17,10 @@ class OtherOrders extends Component {
     }
 
     componentDidMount() { // Lifecycle method - When the component is mounted (on the screen)
+        this.getOrders();
+    }
+
+    getOrders() {
         axios.get(environment.apiUrl + '/getProductsToOrderOther.php', environment.config) // Get the products from the API via http request
             .then(response => {
                 this.setState({ products: response.data }); // Set the state of the products array to the response data
@@ -50,6 +54,11 @@ class OtherOrders extends Component {
 
     handle401 = (error: any) => {
         this.setState({alert401IsOpen: true, alert401Message: error.response.data.message});
+    }
+
+    handleRefresh = (event: CustomEvent<RefresherEventDetail>) => {
+        this.getOrders();
+        event.detail.complete();
     }
 
     render() { // Render the component
@@ -114,6 +123,9 @@ class OtherOrders extends Component {
                     message={this.state.alert401Message}
                     buttons={['OK']}
                 />
+                <IonRefresher slot="fixed" onIonRefresh={this.handleRefresh}>
+                    <IonRefresherContent></IonRefresherContent>
+                </IonRefresher>
             </IonContent>
         )
     }

@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import axios from 'axios';
 import environment from '../environment';
-import { IonAccordion, IonAccordionGroup, IonAlert, IonContent, IonItem, IonLabel, IonToast } from '@ionic/react';
+import { IonAccordion, IonAccordionGroup, IonAlert, IonContent, IonItem, IonLabel, IonToast, RefresherEventDetail } from '@ionic/react';
 import "./Tables.css";
 
 interface FillAccordionProps {
@@ -21,6 +21,10 @@ class FillStockHistoryAccordion extends Component<FillAccordionProps>{
     }
 
     componentDidMount() { // Lifecycle method - When the component is mounted (on the screen)
+        this.getStocks();
+    }
+    
+    getStocks() {
         axios.get(environment.apiUrl + '/getStockhistoryDetails.php', {// Get the stocks from the API via http request
             ...environment.config, // Spread Operator to merge the two objects and ensure that both are included in the request
             params: {
@@ -36,7 +40,7 @@ class FillStockHistoryAccordion extends Component<FillAccordionProps>{
                 } else {
                     this.setToast(true, error.message + " " + error.response.data.message, 10000);
                 }
-            })
+        })
     }
 
     /**
@@ -51,6 +55,11 @@ class FillStockHistoryAccordion extends Component<FillAccordionProps>{
 
     handle401 = (error: any) => {
         this.setState({alert401IsOpen: true, alert401Message: error.response.data.message});
+    }
+
+    handleRefresh = (event: CustomEvent<RefresherEventDetail>) => {
+        this.getStocks();
+        event.detail.complete();
     }
 
     render() { // Render the component
