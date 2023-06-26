@@ -1,4 +1,4 @@
-
+![alt text](https://github.com/526544201/DLBCSPJWD01-9229146/blob/master/public/assets/images/iu_logo.png?raw=true)
 # Introduction
 
 This project is the Portfolio Project for my Java and Web Development course at the IU Internationale Hochschule.    
