@@ -48,7 +48,6 @@ class ChangeHistory extends Component<changeHistoryProps> {
 	/**
 	 * Fetches stock data from the API and updates the component's state.
 	 * @function getStocks
-	 * @returns {void}
 	 * @description  This function makes an HTTP GET request to retrieve stockhistory data from the API based on the `type`.
 	 *               It updates the component's state `stocks` with the received data. If an error occurs,
 	 *               appropriate error handling is performed based on the response status code.
@@ -97,7 +96,6 @@ class ChangeHistory extends Component<changeHistoryProps> {
 	 * Handles a 401 error response by showing an alert.
 	 * @function handle401
 	 * @param {any} error - The error object containing the 401 response.
-	 * @returns {void}
 	 */
 	handle401 = (error: any) => {
 		this.setState({
@@ -110,7 +108,6 @@ class ChangeHistory extends Component<changeHistoryProps> {
 	 * Handles the refresh event of the refresher component.
 	 * @function handleRefresh
 	 * @param {CustomEvent<RefresherEventDetail>} event - The custom event of the refresher component.
-	 * @returns {void}
 	 * @description  calls {@link getStocks} to refresh the data. Afterwards it completes the refresh event.
 	 *
 	 */
