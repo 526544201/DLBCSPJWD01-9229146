@@ -46,7 +46,7 @@ class FillStockHistoryAccordion extends Component<FillAccordionProps> {
 	/**
 	 * Fetches stock data from the API and updates the component's state.
 	 * @function getStocks
-	 * @description  This function makes an HTTP GET request to retrieve stockhistory data from the API based on the `type`.
+	 * @description  This function makes an HTTP GET request to retrieve stockhistory data from the API based on the `changeId`.
 	 *               It updates the component's state `stockChanges` with the received data. If an error occurs,
 	 *               appropriate error handling is performed based on the response status code.
 	 *

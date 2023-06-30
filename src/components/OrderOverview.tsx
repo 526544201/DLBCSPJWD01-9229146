@@ -86,7 +86,7 @@ class OrderOverview extends Component<OrderOverviewProps> {
                                         <td>{product.minAmount}</td>
                                         <td>
                                             {Math.ceil((product.minAmount - product.stock) / product.size)} {/* Calculate the amount of boxes to order. Round up to the nearest full box */}
-                                            {product.size > 1 ? " Boxes" : ""} {/* If the product is sold in boxes, add "Boxes". Otherwise, leave the number alone */}
+                                            {product.size > 1 ? " Box" : ""} {/* If the product is sold in boxes, add "Boxes". Otherwise, leave the number alone */}
                                         </td>
                                     </tr>
                                 ))}

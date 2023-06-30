@@ -132,6 +132,10 @@
                 break;
             case "Outflow":
                 $newStock = $oldStock - $product["quantity"];
+                if($newStock < 0) {
+                    http_response_code(400);
+                    die("Bad request: Stock cannot be negative!");
+                }
                 $quantity = $product["quantity"];
                 break;
             case "Inventory":

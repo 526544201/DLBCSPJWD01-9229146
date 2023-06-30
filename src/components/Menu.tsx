@@ -47,12 +47,6 @@ const appPages: AppPage[] = [
     url: '/page/Stockhistory',
     iosIcon: fileTrayStackedOutline,
     mdIcon: fileTrayStackedSharp
-  },
-  {
-    title: 'Login', // TODO: Delete this
-    url: '/page/Login',
-    iosIcon: keyOutline,
-    mdIcon: keySharp
   }
 ];
 
