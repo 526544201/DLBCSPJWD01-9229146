@@ -117,6 +117,55 @@
 
     // Loop through the data
     foreach($data as $product){
+        // Check if the productId or quantity is missing
+        if(!isset($product["productId"]) || !isset($product["quantity"])){
+            http_response_code(400);
+            $query="DELETE FROM stockchanges WHERE id = " . $stockChangeId;
+            mysqli_query($conn, $query);
+            http_response_code(400);
+            echo json_encode(array(
+                "message" => "Bad request: productId or quantity is missing!"
+            ));
+            die();
+        }
+
+        // Check if productId is a number and not negative
+        if(!is_numeric($product["productId"]) || $product["productId"] < 0){
+            http_response_code(400);
+            $query="DELETE FROM stockchanges WHERE id = " . $stockChangeId;
+            mysqli_query($conn, $query);
+            http_response_code(400);
+            echo json_encode(array(
+                "message" => "Bad request: productId must be a positive number!"
+            ));
+            die();
+        }
+
+        // Check if quantity is a number and not negative
+        if(!is_numeric($product["quantity"]) || $product["quantity"] < 0){
+            http_response_code(400);
+            $query="DELETE FROM stockchanges WHERE id = " . $stockChangeId;
+            mysqli_query($conn, $query);
+            http_response_code(400);
+            echo json_encode(array(
+                "message" => "Bad request: quantity must be a positive number!"
+            ));
+            die();
+        }
+
+        // Check if the product exists
+        $query = "SELECT * FROM products WHERE id = " . $product["productId"];
+        $result = mysqli_query($conn, $query);
+        if(mysqli_num_rows($result) == 0){
+            http_response_code(400);
+            $query="DELETE FROM stockchanges WHERE id = " . $stockChangeId;
+            mysqli_query($conn, $query);
+            http_response_code(400);
+            echo json_encode(array(
+                "message" => "Bad request: Product not found!"
+            ));
+            die();
+        }
 
         // Get the old stock
         $query = "SELECT stock FROM products WHERE id = " . $product["productId"];
@@ -134,7 +183,13 @@
                 $newStock = $oldStock - $product["quantity"];
                 if($newStock < 0) {
                     http_response_code(400);
-                    die("Bad request: Stock cannot be negative!");
+                    $query="DELETE FROM stockchanges WHERE id = " . $stockChangeId;
+                    mysqli_query($conn, $query);
+                    http_response_code(400);
+                    echo json_encode(array(
+                        "message" => "Bad request: New Stock cannot be negative!"
+                    ));
+                    die();
                 }
                 $quantity = $product["quantity"];
                 break;

@@ -63,7 +63,7 @@
         die("Bad request method");
     };
 
-    // TODO: Validate payload
+    // Validate payload
     if(!isset($jsonPayload['id'])) {
         http_response_code(400);
         echo json_encode(array(

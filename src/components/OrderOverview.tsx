@@ -73,7 +73,7 @@ class OrderOverview extends Component<OrderOverviewProps> {
                                 <tr>
                                     <th>Name</th>
                                     <th>Stock</th>
-                                    <th>Minimum</th>
+                                    <th>Min</th>
                                     <th>To Order</th>
                                 </tr>
                             </thead>

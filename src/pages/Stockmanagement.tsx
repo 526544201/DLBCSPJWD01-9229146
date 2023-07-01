@@ -90,6 +90,7 @@ const Stockmanagement: React.FC = () => {
                       <IonLabel>Inventory</IonLabel>
                   </IonSegmentButton>
               </IonSegment>
+          </IonToolbar>
           <IonToolbar>
             <IonSearchbar debounce={1000} onIonInput={handleInput}showClearButton="always" placeholder="Searchbar" ></IonSearchbar>
             <IonButtons slot="end">
@@ -99,7 +100,6 @@ const Stockmanagement: React.FC = () => {
                 disabled={selectedTab === "inventory" ? true : false} // Disable the button if the selected tab is inventory
               ></IonDatetimeButton>
             </IonButtons>
-          </IonToolbar>
           </IonToolbar>
         </IonHeader>
         <IonContent fullscreen>
@@ -113,6 +113,13 @@ const Stockmanagement: React.FC = () => {
           <IonModal keepContentsMounted={true}>
             <IonDatetime 
               id='datetime' // Id for the IonDatetimeButton
+              min={
+                new Date(
+                  new Date().getFullYear(),
+                  new Date().getMonth() - 2,  // Set the min date to 2 months ago
+                  new Date().getDate()
+                ).toISOString()
+              }
               max={new Date().toISOString()} // Set the max date to today
               firstDayOfWeek={1} // Set monday as the first day of the week
               showDefaultButtons={true} // Show the default buttons (Cancel + Done)

@@ -93,12 +93,20 @@ class ProductsTable extends Component <ProductsTableProps> {
     }
 
     checkForUserAuthentication() {
+        console.log("Checking for user authentication");
         if(!localStorage.userId || !localStorage.token) {
             this.setState({alert401IsOpen: true, alert401Message: "Please log in again.", alert401subHeader: "Unauthorized Access.", alert401Route: "/page/Login"});
         }
         if(localStorage.userId != `"1"`) {
-        this.setState({alert401IsOpen: true, alert401Message: "Redirecting", alert401subHeader: "Insufficient Permission.", alert401Route: "/page/Stock"});
-    }
+            switch(localStorage.userId) {
+                case `"2"`:
+                    this.setState({alert401IsOpen: true, alert401Message: "Redirecting", alert401subHeader: "Insufficient Permission.", alert401Route: "/page/Stock"});
+                    break;
+                default: 
+                    this.setState({alert401IsOpen: true, alert401Message: "Please log in again.", alert401subHeader: "Unauthorized Access.", alert401Route: "/page/Login"});
+                    break;
+            }    
+        }
     }
 
     openActionSheet = (product: any) => { // Open the action sheet when a product is clicked
@@ -288,6 +296,7 @@ class ProductsTable extends Component <ProductsTableProps> {
                                             aria-label="Name" 
                                             slot="end" 
                                             className="ion-text-right" 
+                                            max="255"
                                             value={this.state.modalProduct?.name} 
                                             onInput={(e) => this.handleInputChange('name', (e.target as HTMLInputElement).value)}
                                             required
@@ -306,6 +315,7 @@ class ProductsTable extends Component <ProductsTableProps> {
                                             {this.state.categories.map((category: any) => (
                                                 <IonSelectOption key={category.id} value={category.id}>{category.name}</IonSelectOption>
                                             ))}
+                                            required
                                         </IonSelect>
                                     </IonItem>
                                     <IonItem>
@@ -317,7 +327,8 @@ class ProductsTable extends Component <ProductsTableProps> {
                                             slot="end" 
                                             className="ion-text-right" 
                                             value={this.state.modalProduct?.size} 
-                                            min='1' 
+                                            min="1" 
+                                            max="999"
                                             onInput={(e) => this.handleInputChange('size', (e.target as HTMLInputElement).value)}
                                             required
                                             ></IonInput>
@@ -331,7 +342,8 @@ class ProductsTable extends Component <ProductsTableProps> {
                                             slot="end" 
                                             className="ion-text-right" 
                                             value={this.state.modalProduct?.minAmount} 
-                                            min='1' 
+                                            min="1"
+                                            max="999"
                                             onInput={(e) => this.handleInputChange('minAmount', (e.target as HTMLInputElement).value)}
                                             required
                                             ></IonInput>
@@ -348,6 +360,7 @@ class ProductsTable extends Component <ProductsTableProps> {
                                             {this.state.vendors.map((vendor: any) => (
                                                 <IonSelectOption key={vendor.id} value={vendor.id}>{vendor.name}</IonSelectOption>
                                             ))}
+                                            required
                                         </IonSelect>
                                     </IonItem>
                                     <IonItem>
@@ -359,7 +372,8 @@ class ProductsTable extends Component <ProductsTableProps> {
                                             slot="end" 
                                             className="ion-text-right" 
                                             value={this.state.modalProduct?.item_no_byvendor} 
-                                            min='1' 
+                                            min="1"
+                                            max="999999999999999"
                                             onInput={(e) => this.handleInputChange('item_no_byvendor', (e.target as HTMLInputElement).value)}
                                             required
                                             ></IonInput>
@@ -376,6 +390,7 @@ class ProductsTable extends Component <ProductsTableProps> {
                                             {this.state.shelves.map((shelf: any) => (
                                                 <IonSelectOption key={shelf.id} value={shelf.id}>{shelf.name}</IonSelectOption>
                                             ))}
+                                            required
                                         </IonSelect>
                                     </IonItem>
                                     <IonItem>
@@ -387,7 +402,8 @@ class ProductsTable extends Component <ProductsTableProps> {
                                             slot="end" 
                                             className="ion-text-right" 
                                             value={this.state.modalProduct?.shelf_order} 
-                                            min='1'
+                                            min="1"
+                                            max="99"
                                             onInput={(e) => this.handleInputChange('shelf_order', (e.target as HTMLInputElement).value)}                                            
                                             required
                                             ></IonInput>

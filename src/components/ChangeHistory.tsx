@@ -38,6 +38,8 @@ class ChangeHistory extends Component<changeHistoryProps> {
 		toastDuration: 0, // Holds the duration for which the toast should be visible
 		alert401IsOpen: false, // Tracks the visibility of the 401 alert
 		alert401Message: "", // Holds the message to be displayed in the 401 alert
+		alert401subHeader: "",
+		alert401Route: "",
 	};
 
 	componentDidMount() {
@@ -55,6 +57,7 @@ class ChangeHistory extends Component<changeHistoryProps> {
 	 *               If User is unauthorized, {@link handle401} is called. If other error, a toast is displayed with the error message sent by the API.
 	 */
 	getStocks() {
+		this.checkForUserAuthentication();
 		axios
 			.get(environment.apiUrl + "/getStockhistory.php", {
 				...environment.config, // Spread Operator to merge the two objects and ensure that both are included in the request
@@ -92,6 +95,29 @@ class ChangeHistory extends Component<changeHistoryProps> {
 			toastDuration: duration,
 		});
 	}
+
+	checkForUserAuthentication() {
+        if(!localStorage.userId || !localStorage.token) {
+			console.log("Hello!2");
+            this.setState({alert401IsOpen: true, alert401Message: "Please log in again.", alert401subHeader: "Unauthorized Access.", alert401Route: "/page/Login"});
+			return;
+        }
+		console.log("User is authenticated");
+        if(localStorage.userId != `"1"`) {
+            switch(localStorage.userId) {
+                case `"2"`:
+                    this.setState({alert401IsOpen: true, alert401Message: "Redirecting", alert401subHeader: "Insufficient Permission.", alert401Route: "/page/Stock"});
+                    break;
+                default: 
+                    this.setState({alert401IsOpen: true, alert401Message: "Please log in again.", alert401subHeader: "Unauthorized Access.", alert401Route: "/page/Login"});
+                    break;
+            }    
+			return;
+        }
+		console.log("User has sufficient permissions");
+		console.log(this.state.alert401IsOpen);
+    }
+
 	/**
 	 * Handles a 401 error response by showing an alert.
 	 * @function handle401
@@ -102,7 +128,7 @@ class ChangeHistory extends Component<changeHistoryProps> {
 			alert401IsOpen: true,
 			alert401Message: error.response.data.message,
 		});
-	};
+	}
 
 	/**
 	 * Handles the refresh event of the refresher component.
@@ -118,45 +144,7 @@ class ChangeHistory extends Component<changeHistoryProps> {
 
 	render() {
 		const { stocks } = this.state;
-		if (
-			stocks.length === 0 ||
-			stocks === undefined ||
-			!Array.isArray(stocks)
-		) {
-			// If stocks state is empty or undefined or not an array (somehow stocks get the axios errormessage if there is no connection. Therefore check if Array),
-			// 4do not display table, as maps() will throw an error and crash the app. Instead, display a loading message.
-			return (
-				<IonContent className="ion-padding">
-					<div>Loading...</div>
-					{/* Renders an IonToast component with dynamic duration and messages */}
-					<IonToast
-						isOpen={this.state.toastIsOpen}
-						onDidDismiss={() => this.setToast(false)}
-						message={this.state.toastMessage}
-						duration={this.state.toastDuration}
-					/>
-					{/* Renders an IonAlert component to diplay an unauthorized access message */}
-					<IonAlert
-						isOpen={this.state.alert401IsOpen}
-						onDidDismiss={() => {
-							this.setState({ alert401IsOpen: false });
-							localStorage.clear;
-							window.location.href = "/page/Login";
-						}}
-						header="Unauthorized Access"
-						subHeader="Please log in again."
-						message={this.state.alert401Message}
-						buttons={["OK"]}
-					/>
-					<IonRefresher
-						slot="fixed"
-						onIonRefresh={this.handleRefresh}
-					>
-						<IonRefresherContent></IonRefresherContent>
-					</IonRefresher>
-				</IonContent>
-			);
-		} else {
+
 			return (
 				<IonContent className="ion-padding">
 					<IonAccordionGroup>
@@ -188,11 +176,13 @@ class ChangeHistory extends Component<changeHistoryProps> {
 						isOpen={this.state.alert401IsOpen}
 						onDidDismiss={() => {
 							this.setState({ alert401IsOpen: false });
-							localStorage.clear;
-							window.location.href = "/page/Login";
+							if(this.state.alert401Route == "/page/Login") {
+								localStorage.clear();
+							}
+							window.location.href = this.state.alert401Route;
 						}}
 						header="Unauthorized Access"
-						subHeader="Please log in again."
+						subHeader={this.state.alert401subHeader}
 						message={this.state.alert401Message}
 						buttons={["OK"]}
 					/>
@@ -206,6 +196,6 @@ class ChangeHistory extends Component<changeHistoryProps> {
 			);
 		}
 	}
-}
+
 
 export default ChangeHistory;

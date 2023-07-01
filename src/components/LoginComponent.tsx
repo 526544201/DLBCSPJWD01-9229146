@@ -35,8 +35,16 @@ class LoginComponent extends Component {
             localStorage.setItem('userId', JSON.stringify(response.data.userId));
             localStorage.setItem('token', JSON.stringify(response.data.token));
             localStorage.setItem('tokenExpires', JSON.stringify(response.data.tokenExpires));
-            // Redirect to the home page
-            window.location.href = '/page/Products';
+            // Redirect to the next page
+            switch(localStorage.getItem('userId')) {
+                case `"1"`:
+                    window.location.href = '/page/Products';
+                    break;
+                default:
+                    window.location.href = '/page/Stock';
+                    break;
+            }
+            
         })
         .catch(error => {
             this.setToast(true, error.message + ": " + error.response.data.message, 5000);
@@ -64,9 +72,10 @@ class LoginComponent extends Component {
                     <div className="form-group">
                         <label htmlFor="username">Username</label>
                         <input 
-                            type="text" 
+                            type="email" 
                             id="username" 
                             name="username" 
+                            max="50"
                             value={this.state.email}
                             onChange={this.handleEmailChange} 
                             required 
@@ -78,6 +87,7 @@ class LoginComponent extends Component {
                             type="password" 
                             id="password" 
                             name="password" 
+                            max="50"
                             value={this.state.password}
                             onChange={this.handlePasswordChange}                          
                             required 
