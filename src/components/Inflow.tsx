@@ -147,10 +147,11 @@ class Inflow extends Component <InflowProps> {
         axios.post(environment.apiUrl + '/bookStockchange.php', payload, environment.config ) // Post the payload to the API via http request
             .then(response => {
                 this.setToast(true, response.data.message, 10000);
-                /* DEBUG: Deactivated to demonstrate Idempotency
-                this.setState({changedProducts: []}); // Reset the changedProducts array
-                this.setState({requestId: ''}); // Reset the request id
-                this.setState({productChanges: {}}); // Reset the productChanges array */
+                if(response.status == 200) {
+					this.setState({changedProducts: []}); // Reset the changedProducts array
+					this.setState({requestId: ''}); // Reset the request id
+					this.setState({productChanges: {}}); // Reset the productChanges array 
+				}
             })
             .catch(error => { // Catch any errors
                 if (error.response) {
