@@ -32,7 +32,7 @@ const Stockmanagement: React.FC = () => {
             componentToRender = <Outflow key="outflow" selectedDate={selectedDate} searchTerm={searchTerm} />; 
             break;
         case "inventory":
-            componentToRender = <Inventory key="inventory" selectedDate={selectedDate} />
+            componentToRender = <Inventory key="inventory" selectedDate={selectedDate} searchTerm={searchTerm} />
             break;
         default:
             componentToRender = <Inflow key="inflow" selectedDate={selectedDate} searchTerm={searchTerm} />; 

@@ -34,7 +34,7 @@ class ProductsTable extends Component <ProductsTableProps> {
     getProducts() {
         axios.get(environment.apiUrl + '/getProducts.php', environment.config) // Get the products from the API via http request
         .then(response => {
-            this.checkForUserAuthentication();
+            this.checkForUserAuthentication(); // No idea why, but this has to be here, as if it is called anytime before that, the IonAlert will not be rendered
             this.setState({ products: response.data }); // Set the state of the products array to the response data
         })
         .catch(error => { // Catch any errors

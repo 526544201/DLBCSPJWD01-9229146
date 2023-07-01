@@ -45,6 +45,7 @@ class ChangeHistory extends Component<changeHistoryProps> {
 	componentDidMount() {
 		// Lifecycle method - When the component is mounted (on the screen)
 		this.getStocks();
+
 	}
 
 	/**
@@ -57,7 +58,6 @@ class ChangeHistory extends Component<changeHistoryProps> {
 	 *               If User is unauthorized, {@link handle401} is called. If other error, a toast is displayed with the error message sent by the API.
 	 */
 	getStocks() {
-		this.checkForUserAuthentication();
 		axios
 			.get(environment.apiUrl + "/getStockhistory.php", {
 				...environment.config, // Spread Operator to merge the two objects and ensure that both are included in the request
@@ -66,6 +66,7 @@ class ChangeHistory extends Component<changeHistoryProps> {
 				},
 			})
 			.then((response) => {
+				this.checkForUserAuthentication();
 				this.setState({ stocks: response.data });
 			})
 			.catch((error) => {
@@ -96,13 +97,11 @@ class ChangeHistory extends Component<changeHistoryProps> {
 		});
 	}
 
-	checkForUserAuthentication() {
+    checkForUserAuthentication() {
+        console.log("Checking for user authentication");
         if(!localStorage.userId || !localStorage.token) {
-			console.log("Hello!2");
             this.setState({alert401IsOpen: true, alert401Message: "Please log in again.", alert401subHeader: "Unauthorized Access.", alert401Route: "/page/Login"});
-			return;
         }
-		console.log("User is authenticated");
         if(localStorage.userId != `"1"`) {
             switch(localStorage.userId) {
                 case `"2"`:
@@ -112,10 +111,7 @@ class ChangeHistory extends Component<changeHistoryProps> {
                     this.setState({alert401IsOpen: true, alert401Message: "Please log in again.", alert401subHeader: "Unauthorized Access.", alert401Route: "/page/Login"});
                     break;
             }    
-			return;
         }
-		console.log("User has sufficient permissions");
-		console.log(this.state.alert401IsOpen);
     }
 
 	/**
