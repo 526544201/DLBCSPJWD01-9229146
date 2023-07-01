@@ -40,12 +40,18 @@ class OrderOverview extends Component<OrderOverviewProps> {
                 this.checkForUserAuthentication();
             })
             .catch(error => { // Catch any errors
-                if(error.response.status === 401) {
-                    this.handle401(error);
+                if (error.response) {
+                    if (error.response.status === 401) {
+                        this.handle401(error);
+                    } else if (error.response.data && error.response.data.message) {
+                        this.setToast(true, error.response.data.message, 10000);
+                    } else {
+                        this.setToast(true, error.message, 10000);
+                    }
                 } else {
-                    this.setToast(true, error.message + " " + error.response.data.message, 10000);
+                    this.setToast(true, error.message, 10000);
                 }
-            })
+            });
     }
 
     setToast(isOpen: boolean, message?: string, duration?: number) { // Set the toast message

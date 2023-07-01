@@ -38,10 +38,16 @@ class ProductsTable extends Component <ProductsTableProps> {
             this.setState({ products: response.data }); // Set the state of the products array to the response data
         })
         .catch(error => { // Catch any errors
-            if(error.response.status === 401) {
-                this.handle401(error);
+            if (error.response) {
+                if (error.response.status === 401) {
+                    this.handle401(error);
+                } else if (error.response.data && error.response.data.message) {
+                    this.setToast(true, error.response.data.message, 10000);
+                } else {
+                    this.setToast(true, error.message, 10000);
+                }
             } else {
-                this.setToast(true, error.message + " " + error.response.data.message, 10000);
+                this.setToast(true, error.message, 10000);
             }
         })
     }
@@ -52,10 +58,16 @@ class ProductsTable extends Component <ProductsTableProps> {
             this.setState({ vendors: response.data }); // Set the state of the products array to the response data
         })
         .catch(error => { // Catch any errors
-            if(error.response.status === 401) {
-                this.handle401(error);
+            if (error.response) {
+                if (error.response.status === 401) {
+                    this.handle401(error);
+                } else if (error.response.data && error.response.data.message) {
+                    this.setToast(true, error.response.data.message, 10000);
+                } else {
+                    this.setToast(true, error.message, 10000);
+                }
             } else {
-                this.setToast(true, error.message + " " + error.response.data.message, 10000);
+                this.setToast(true, error.message, 10000);
             }
         })
     }
@@ -66,10 +78,16 @@ class ProductsTable extends Component <ProductsTableProps> {
             this.setState({ categories: response.data }); // Set the state of the products array to the response data
         })
         .catch(error => { // Catch any errors
-            if(error.response.status === 401) {
-                this.handle401(error);
+            if (error.response) {
+                if (error.response.status === 401) {
+                    this.handle401(error);
+                } else if (error.response.data && error.response.data.message) {
+                    this.setToast(true, error.response.data.message, 10000);
+                } else {
+                    this.setToast(true, error.message, 10000);
+                }
             } else {
-                this.setToast(true, error.message + " " + error.response.data.message, 10000);
+                this.setToast(true, error.message, 10000);
             }
         })
     }
@@ -80,10 +98,16 @@ class ProductsTable extends Component <ProductsTableProps> {
             this.setState({ shelves: response.data }); // Set the state of the products array to the response data
         })
         .catch(error => { // Catch any errors
-            if(error.response.status === 401) {
-                this.handle401(error);
+            if (error.response) {
+                if (error.response.status === 401) {
+                    this.handle401(error);
+                } else if (error.response.data && error.response.data.message) {
+                    this.setToast(true, error.response.data.message, 10000);
+                } else {
+                    this.setToast(true, error.message, 10000);
+                }
             } else {
-                this.setToast(true, error.message + " " + error.response.data.message, 10000);
+                this.setToast(true, error.message, 10000);
             }
         })
     }
@@ -120,10 +144,16 @@ class ProductsTable extends Component <ProductsTableProps> {
             this.getProducts(); // Update the products
         })
         .catch(error => { // Catch any errors
-            if(error.response.status === 401) {
-                this.handle401(error);
+            if (error.response) {
+                if (error.response.status === 401) {
+                    this.handle401(error);
+                } else if (error.response.data && error.response.data.message) {
+                    this.setToast(true, error.response.data.message, 10000);
+                } else {
+                    this.setToast(true, error.message, 10000);
+                }
             } else {
-                this.setToast(true, error.message + " " + error.response.data.message, 10000);
+                this.setToast(true, error.message, 10000);
             }
         })
     }

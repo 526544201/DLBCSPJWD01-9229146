@@ -47,7 +47,15 @@ class LoginComponent extends Component {
             
         })
         .catch(error => {
-            this.setToast(true, error.message + ": " + error.response.data.message, 5000);
+            if (error.response) {
+                if (error.response.data && error.response.data.message) {
+                    this.setToast(true, error.response.data.message, 10000);
+                } else {
+                    this.setToast(true, error.message, 10000);
+                }
+            } else {
+                this.setToast(true, error.message, 10000);
+            }
         });
     }  
 
