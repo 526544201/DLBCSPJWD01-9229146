@@ -5,7 +5,8 @@ import { IonAlert, IonButton, IonCard, IonCardContent, IonCardHeader, IonContent
 import "./Tables.css";
 
 interface InventoryProps {
-    selectedDate: string
+    selectedDate: string,
+    searchTerm: string
 }
 
 class Inventory extends Component <InventoryProps> {
@@ -44,7 +45,7 @@ class Inventory extends Component <InventoryProps> {
     * @returns {string} The randomly generated request ID.
     */
     createRequestId() {
-        const characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
+        const characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789@#$%&*(){}[]<>?/-_+=';
         let result = '';
         const charactersLength = characters.length;
         for ( let i = 0; i < 15; i++ ) {
@@ -121,14 +122,20 @@ class Inventory extends Component <InventoryProps> {
 
     render() { // Render the component
         const { products } = this.state;
-        const groupedProducts = this.groupByShelf(products);
+        const { searchTerm } = this.props;
+        const groupedProducts = this.groupByShelf(products);        
 
         return ( // "Normal HTML" to be rendered
-        
             <div>  { /* Only one element can be returned, so we wrap everything in a div. This div holds the table */ }
                 <form onSubmit={this.handleSubmit}>
-                {Object.entries(groupedProducts).map(([shelfId, {products, shelfName}]) => ( // Object.entries returns an array of key-value pairs. 
+                {Object.entries(groupedProducts).map(([shelfId, {products, shelfName}]) => { // Object.entries returns an array of key-value pairs. 
                     // The key is the category id, and the value is the array of products. For each key-value pair, create an Table with the corresponding products
+                    const filteredProducts = products.filter((product: any) => 
+                        product.name.toLowerCase().includes(searchTerm.toLowerCase()));
+                    if (filteredProducts.length === 0) {
+                        return null;
+                    }
+                    return (
                     <div key={shelfId}>
                         <IonCard>
                             <div className="bannerDiv">
@@ -149,7 +156,7 @@ class Inventory extends Component <InventoryProps> {
                                     </tr>
                                 </thead>
                                 <tbody>
-                                    {(products as any[]).map((product: any) => ( // Fill the table with the corresponding products
+                                    {(filteredProducts as any[]).map((product: any) => ( // Fill the table with the corresponding products
                                         <tr key={product.id}>
                                             <td>{product.name}</td>
                                             <td>{product.stock}</td>
@@ -168,7 +175,7 @@ class Inventory extends Component <InventoryProps> {
                             </IonCardContent>                      
                         </IonCard>
                     </div>
-                    ))}   
+                    )})}   
                 <IonButton type="submit">Submit</IonButton>
                 </form>
                 <IonToast
