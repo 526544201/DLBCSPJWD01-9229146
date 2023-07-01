@@ -21,7 +21,9 @@ class Inflow extends Component <InflowProps> {
         toastDuration: 0,
         productChanges: {} as { [key: number]: any}, // No idea, why this is necessary, but otherwise Input fields lose value on filtering. Working with changedProducts did not work.
         alert401IsOpen: false,
-        alert401Message: ""
+        alert401Message: "",
+		alert401subHeader: "",
+		alert401Route: ""
     }
 
     componentDidMount() { // Lifecycle method - When the component is mounted (on the screen)
@@ -43,6 +45,7 @@ class Inflow extends Component <InflowProps> {
         })
             .then(response => {
                 this.setState({ products: response.data }); // Set the state of the products array to the response data
+				this.checkForUserAuthentication();
                 const productChanges: { [key: number]: any} = {};
 
                 response.data.forEach((product: any) => {
@@ -53,7 +56,7 @@ class Inflow extends Component <InflowProps> {
             })
             .catch(error => { // Catch any errors
                 if(error.response.status === 401) {
-                    this.handle401(error);
+                    this.handle401(error, "Invalid Token.");
                 } else {
                     this.setToast(true, error.message + " " + error.response.data.message, 10000);
                 }
@@ -97,6 +100,7 @@ class Inflow extends Component <InflowProps> {
          * @param {number} productId - The ID of the product being changed.
      */
     handleInputChange = (event: any, productId: number) => {
+		this.checkForUserAuthentication();
         const changedProducts: {productId: number, quantity: number}[] = [...this.state.changedProducts]; // Typescript doesn't like changedProducts.push({productId, quantity});
         const quantity = event.target.value; // Get the value of the input
         // Check if the product is already in the changedProducts array, and if so, update the quantity, otherwise add it to the array. Major Bug!
@@ -132,7 +136,7 @@ class Inflow extends Component <InflowProps> {
             this.setToast(true, "No products changed!", 3000);
             return;
         }
-
+		this.checkForUserAuthentication();
         const payload = this.createPayload();
         axios.post(environment.apiUrl + '/bookStockchange.php', payload, environment.config ) // Post the payload to the API via http request
             .then(response => {
@@ -187,8 +191,19 @@ class Inflow extends Component <InflowProps> {
         this.setState({ toastIsOpen: isOpen, toastMessage: message, toastDuration: duration });
     }
 
-    handle401 = (error: any) => {
-        this.setState({alert401IsOpen: true, alert401Message: error.response.data.message});
+	checkForUserAuthentication() {
+        if(!localStorage.userId || !localStorage.token) {
+            this.setState({alert401IsOpen: true, alert401Message: "Please log in again.", alert401subHeader: "Unauthorized Access.", alert401Route: "/page/Login"});
+        }
+    }
+
+	handle401 = (error: any, subheader?: string) => {
+        this.setState({alert401IsOpen: true, alert401Message: error.response.data.message, alert401Route: "/page/Login"});
+        if(subheader) {
+            this.setState({alert401subHeader: subheader});
+        } else {
+            this.setState({alert401subHeader: "Please log in again."});
+        }
     }
 
     handleRefresh = (event: CustomEvent<RefresherEventDetail>) => {
@@ -265,18 +280,20 @@ class Inflow extends Component <InflowProps> {
                     message={this.state.toastMessage}
                     duration={this.state.toastDuration}
                 />
-                <IonAlert
-                    isOpen={this.state.alert401IsOpen}
-                    onDidDismiss={() => { 
-                        this.setState({alert401IsOpen: false});
-                        localStorage.clear;
-                        window.location.href = "/page/Login";
-                    }}
-                    header="Unauthorized Access"
-                    subHeader="Please log in again."
-                    message={this.state.alert401Message}
-                    buttons={['OK']}
-                />
+				<IonAlert
+						isOpen={this.state.alert401IsOpen}
+						onDidDismiss={() => {
+							this.setState({ alert401IsOpen: false });
+							if(this.state.alert401Route == "/page/Login") {
+								localStorage.clear();
+							}
+							window.location.href = this.state.alert401Route;
+						}}
+						header="Unauthorized Access"
+						subHeader={this.state.alert401subHeader}
+						message={this.state.alert401Message}
+						buttons={["OK"]}
+					/>
                 <IonRefresher slot="fixed" onIonRefresh={this.handleRefresh}>
                     <IonRefresherContent></IonRefresherContent>
                 </IonRefresher>

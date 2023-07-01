@@ -119,12 +119,14 @@ class ChangeHistory extends Component<changeHistoryProps> {
 	 * @function handle401
 	 * @param {any} error - The error object containing the 401 response.
 	 */
-	handle401 = (error: any) => {
-		this.setState({
-			alert401IsOpen: true,
-			alert401Message: error.response.data.message,
-		});
-	}
+	handle401 = (error: any, subheader?: string) => {
+        this.setState({alert401IsOpen: true, alert401Message: error.response.data.message, alert401Route: "/page/Login"});
+        if(subheader) {
+            this.setState({alert401subHeader: subheader});
+        } else {
+            this.setState({alert401subHeader: "Please log in again."});
+        }
+    }
 
 	/**
 	 * Handles the refresh event of the refresher component.

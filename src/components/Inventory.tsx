@@ -18,7 +18,9 @@ class Inventory extends Component <InventoryProps> {
         toastDuration: 0,
         requestId: "",
         alert401IsOpen: false,
-        alert401Message: ""
+        alert401Message: "",
+        alert401subHeader: "",
+        alert401Route: ""
     }
 
     componentDidMount() { // Lifecycle method - When the component is mounted (on the screen)
@@ -34,10 +36,15 @@ class Inventory extends Component <InventoryProps> {
         }) 
             .then(response => {
                 this.setState({ products: response.data }); // Set the state of the products array to the response data
+                this.checkForUserAuthentication();
             })
             .catch(error => { // Catch any errors
-                this.setToast(true, error.message + " " + error.response.data.message, 10000);
-            });
+                if(error.response.status === 401) {
+                    this.handle401(error, "Invalid Token.");
+                } else {
+                    this.setToast(true, error.message + " " + error.response.data.message, 10000);
+                }
+            })
     }
 
     /**
@@ -68,6 +75,7 @@ class Inventory extends Component <InventoryProps> {
     }
 
     handleInputChange = (event: any, productId: any) => {
+        this.checkForUserAuthentication();
         const updatedStocks: {productId: number, quantity: number}[] = [...this.state.updatedStocks]; // Typescript doesn't like updatedStocks.push({productId, quantity});
         const quantity = event.target.value; // Get the value of the input
         updatedStocks.push({productId, quantity}); // Push the product id and quantity to the updatedStocks array
@@ -76,7 +84,7 @@ class Inventory extends Component <InventoryProps> {
 
     handleSubmit = (event: any) => {
         event.preventDefault();
-
+        this.checkForUserAuthentication();
         // Check if the user has changed the stock of any products
         if (Object.keys(this.state.updatedStocks).length === 0 || Object.keys(this.state.updatedStocks).length === undefined) {
             this.setToast(true, "No products have been updated!", 3000);
@@ -111,8 +119,19 @@ class Inventory extends Component <InventoryProps> {
         this.setState({ toastIsOpen: isOpen, toastMessage: message, toastDuration: duration });
     }
 
-    handle401 = (error: any) => {
-        this.setState({alert401IsOpen: true, alert401Message: error.response.data.message});
+    checkForUserAuthentication() {
+        if(!localStorage.userId || !localStorage.token) {
+            this.setState({alert401IsOpen: true, alert401Message: "Please log in again.", alert401subHeader: "Unauthorized Access.", alert401Route: "/page/Login"});
+        }
+    }
+
+	handle401 = (error: any, subheader?: string) => {
+        this.setState({alert401IsOpen: true, alert401Message: error.response.data.message, alert401Route: "/page/Login"});
+        if(subheader) {
+            this.setState({alert401subHeader: subheader});
+        } else {
+            this.setState({alert401subHeader: "Please log in again."});
+        }
     }
 
     handleRefresh = (event: CustomEvent<RefresherEventDetail>) => {
@@ -184,18 +203,20 @@ class Inventory extends Component <InventoryProps> {
                     onDidDismiss={() => this.setToast(false)}
                     duration={this.state.toastDuration}
                 />
-                <IonAlert
-                    isOpen={this.state.alert401IsOpen}
-                    onDidDismiss={() => { 
-                        this.setState({alert401IsOpen: false});
-                        localStorage.clear;
-                        window.location.href = "/page/Login";
-                    }}
-                    header="Unauthorized Access"
-                    subHeader="Please log in again."
-                    message={this.state.alert401Message}
-                    buttons={['OK']}
-                />
+            <IonAlert
+						isOpen={this.state.alert401IsOpen}
+						onDidDismiss={() => {
+							this.setState({ alert401IsOpen: false });
+							if(this.state.alert401Route == "/page/Login") {
+								localStorage.clear();
+							}
+							window.location.href = this.state.alert401Route;
+						}}
+						header="Unauthorized Access"
+						subHeader={this.state.alert401subHeader}
+						message={this.state.alert401Message}
+						buttons={["OK"]}
+					/>
                 <IonRefresher slot="fixed" onIonRefresh={this.handleRefresh}>
                     <IonRefresherContent></IonRefresherContent>
                 </IonRefresher>

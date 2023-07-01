@@ -21,7 +21,9 @@ class Outflow extends Component<OutflowProps> {
         toastDuration: 0,
         productChanges: {} as { [key: number]: any },
         alert401IsOpen: false,
-        alert401Message: ''
+        alert401Message: '',
+        alert401subHeader: '',
+        alert401Route: ''
     }
 
     componentDidMount() { // Lifecycle method - When the component is mounted (on the screen)
@@ -38,7 +40,7 @@ class Outflow extends Component<OutflowProps> {
         axios.get(environment.apiUrl + '/getProducts.php', environment.config) // Get the products from the API via http request
             .then(response => {
                 this.setState({ products: response.data }); // Set the state of the products array to the response data
-
+                this.checkForUserAuthentication()
                 const productChanges: { [key: number]: any } = {};
 
                 response.data.forEach((product: any) => {
@@ -48,8 +50,8 @@ class Outflow extends Component<OutflowProps> {
                 this.setState({ productChanges: productChanges });
             })
             .catch(error => { // Catch any errors
-                if (error.response.status === 401) {
-                    this.handle401(error);
+                if(error.response.status === 401) {
+                    this.handle401(error, "Invalid Token.");
                 } else {
                     this.setToast(true, error.message + " " + error.response.data.message, 10000);
                 }
@@ -81,6 +83,7 @@ class Outflow extends Component<OutflowProps> {
     }
 
     handleInputChange = (event: any, productId: any) => {
+        this.checkForUserAuthentication();
         const changedProducts: { productId: number, quantity: number }[] = [...this.state.changedProducts]; // Typescript doesn't like changedProducts.push({productId, quantity});
         const quantity = event.target.value; // Get the value of the input
         // Check if the product is already in the changedProducts array, and if so, update the quantity, otherwise add it to the array. Major Bug!
@@ -111,6 +114,7 @@ class Outflow extends Component<OutflowProps> {
             this.setToast(true, "No products changed!", 3000);
             return;
         }
+        this.checkForUserAuthentication();
         // Check if enough stock is available
         const changedProducts: { productId: number, quantity: number }[] = this.state.changedProducts;
         const products: any[] = this.state.products;
@@ -162,8 +166,19 @@ class Outflow extends Component<OutflowProps> {
         this.setState({ toastIsOpen: isOpen, toastMessage: message, toastDuration: duration });
     }
 
-    handle401 = (error: any) => {
-        this.setState({ alert401IsOpen: true, alert401Message: error.response.data.message });
+    checkForUserAuthentication() {
+        if(!localStorage.userId || !localStorage.token) {
+            this.setState({alert401IsOpen: true, alert401Message: "Please log in again.", alert401subHeader: "Unauthorized Access.", alert401Route: "/page/Login"});
+        }
+    }
+
+	handle401 = (error: any, subheader?: string) => {
+        this.setState({alert401IsOpen: true, alert401Message: error.response.data.message, alert401Route: "/page/Login"});
+        if(subheader) {
+            this.setState({alert401subHeader: subheader});
+        } else {
+            this.setState({alert401subHeader: "Please log in again."});
+        }
     }
 
     handleRefresh = (event: CustomEvent<RefresherEventDetail>) => {
@@ -239,17 +254,19 @@ class Outflow extends Component<OutflowProps> {
                     duration={this.state.toastDuration}
                 />
                 <IonAlert
-                    isOpen={this.state.alert401IsOpen}
-                    onDidDismiss={() => {
-                        this.setState({ alert401IsOpen: false });
-                        localStorage.clear;
-                        window.location.href = "/page/Login";
-                    }}
-                    header="Unauthorized Access"
-                    subHeader="Please log in again."
-                    message={this.state.alert401Message}
-                    buttons={['OK']}
-                />
+						isOpen={this.state.alert401IsOpen}
+						onDidDismiss={() => {
+							this.setState({ alert401IsOpen: false });
+							if(this.state.alert401Route == "/page/Login") {
+								localStorage.clear();
+							}
+							window.location.href = this.state.alert401Route;
+						}}
+						header="Unauthorized Access"
+						subHeader={this.state.alert401subHeader}
+						message={this.state.alert401Message}
+						buttons={["OK"]}
+					/>
                 <IonRefresher slot="fixed" onIonRefresh={this.handleRefresh}>
                     <IonRefresherContent></IonRefresherContent>
                 </IonRefresher>
