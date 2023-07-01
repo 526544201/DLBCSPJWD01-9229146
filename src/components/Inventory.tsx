@@ -17,6 +17,7 @@ class Inventory extends Component <InventoryProps> {
         toastMessage: "",
         toastDuration: 0,
         requestId: "",
+        productChanges: {} as { [key: number]: any}, // No idea, why this is necessary, but otherwise Input fields lose value on filtering. Working with changedProducts did not work.
         alert401IsOpen: false,
         alert401Message: "",
         alert401subHeader: "",
@@ -86,6 +87,17 @@ class Inventory extends Component <InventoryProps> {
         const quantity = event.target.value; // Get the value of the input
         updatedStocks.push({productId, quantity}); // Push the product id and quantity to the updatedStocks array
         this.setState({updatedStocks}); // Set the state of the updatedStocks array to the new array
+        // TODO: FIX THIS
+
+        const updatedProductChanges = {
+            ...this.state.productChanges,
+            [productId]: quantity
+        };
+
+        this.setState({productChanges: updatedProductChanges});
+
+        console.log(this.state.productChanges);
+        console.log(this.state.updatedStocks);
     }
 
     handleSubmit = (event: any) => {
@@ -100,6 +112,11 @@ class Inventory extends Component <InventoryProps> {
         axios.post(environment.apiUrl + '/bookStockchange.php', payload, environment.config ) // Post the payload to the API via http request
             .then(response => {
                 this.setToast(true, response.data.message, 10000);
+                if(response.status == 200) {
+                    this.setState({changedProducts: []}); // Reset the changedProducts array
+                    this.setState({requestId: ''}); // Reset the request id
+                    this.setState({productChanges: {}}); // Reset the productChanges array 
+                }
             })
             .catch(error => { // Catch any errors
                 if (error.response) {
@@ -152,7 +169,7 @@ class Inventory extends Component <InventoryProps> {
     }
 
     render() { // Render the component
-        const { products } = this.state;
+        const { products, productChanges } = this.state;
         const { searchTerm } = this.props;
         const groupedProducts = this.groupByShelf(products);        
 
@@ -196,6 +213,7 @@ class Inventory extends Component <InventoryProps> {
                                                     placeholder='0'
                                                     min={0}
                                                     type='number'
+                                                    value={productChanges[product.id]}
                                                     onInput={(event) => this.handleInputChange(event, product.id)}    
                                                 />
                                             </td>
